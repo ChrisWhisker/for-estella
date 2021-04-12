@@ -19,7 +19,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	void UseTool();
-	void SwitchTool(int32 ToolNum);
+	void SwitchTool(int32 NewToolIndex);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 ActiveTool = 0;

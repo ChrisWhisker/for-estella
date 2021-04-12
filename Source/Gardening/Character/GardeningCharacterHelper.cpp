@@ -90,25 +90,18 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit, FVector& ShotDirection)
 	                                            Params);
 }
 
-void UGardeningCharacterHelper::SwitchTool(int32 ToolNum)
+void UGardeningCharacterHelper::SwitchTool(const int32 NewToolIndex)
 {
-	if (ToolNum == ActiveTool) { return; }
+	if (NewToolIndex == ActiveTool) { return; }
 
-	if (ToolNum == -1) // Go to next item
+	if (NewToolIndex == -1) // Go to next item
 	{
-		if (ActiveTool < Tools.Num() - 1)
-		{
-			ActiveTool += 1;
-		}
-		else
-		{
-			ActiveTool = 0;
-		}
+		ActiveTool = (ActiveTool + 1) % Tools.Num();
 	}
 	else // Go to selected item
 	{
-		ActiveTool = ToolNum;
+		ActiveTool = NewToolIndex;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("%s is active"), *Tools[ActiveTool]);
+	// UE_LOG(LogTemp, Warning, TEXT("%s is active"), *Tools[ActiveTool]);
 }
