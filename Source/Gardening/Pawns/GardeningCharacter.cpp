@@ -81,6 +81,19 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// Garden-specific bindings
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::Fire);
+
+	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
+	InputComponent->BindAction<FCustomInputDelegate>
+		("SwitchItem", IE_Pressed, this, &AGardeningCharacter::SwitchItem, -1);
+	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
+	InputComponent->BindAction<FCustomInputDelegate>
+		("Item1", IE_Pressed, this, &AGardeningCharacter::SwitchItem, 0);
+	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
+	InputComponent->BindAction<FCustomInputDelegate>
+		("Item2", IE_Pressed, this, &AGardeningCharacter::SwitchItem, 1);
+	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
+	InputComponent->BindAction<FCustomInputDelegate>
+		("Item3", IE_Pressed, this, &AGardeningCharacter::SwitchItem, 2);
 }
 
 
@@ -149,4 +162,9 @@ void AGardeningCharacter::MoveRight(float Value)
 void AGardeningCharacter::Fire()
 {
 	Helper->UseItem();
+}
+
+void AGardeningCharacter::SwitchItem(int32 ItemNum)
+{
+	Helper->SwitchItem(ItemNum);
 }

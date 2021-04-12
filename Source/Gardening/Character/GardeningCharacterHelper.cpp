@@ -12,7 +12,9 @@ UGardeningCharacterHelper::UGardeningCharacterHelper()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	Items.Add(TEXT("Seeds"));
+	Items.Add(TEXT("Water"));
+	Items.Add(TEXT("Axe"));
 }
 
 
@@ -53,7 +55,7 @@ void UGardeningCharacterHelper::UseItem()
 
 		const float PlantYaw = FMath::RandRange(0.f, 360.f);
 		UE_LOG(LogTemp, Warning, TEXT("%f"), PlantYaw);
-		FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
+		const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
 		GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
 	}
 }
@@ -82,4 +84,27 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit, FVector& ShotDirection)
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
 	                                            ECollisionChannel::ECC_GameTraceChannel1,
 	                                            Params);
+}
+
+void UGardeningCharacterHelper::SwitchItem(int32 ItemNum)
+{
+	if (ItemNum == ActiveItem) { return; }
+
+	if (ItemNum == -1) // Go to next item
+	{
+		if (ActiveItem < Items.Num() - 1)
+		{
+			ActiveItem += 1;
+		}
+		else
+		{
+			ActiveItem = 0;
+		}
+	}
+	else // Go to selected item
+	{
+		ActiveItem = ItemNum;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%s is active"), *Items[ActiveItem]);
 }

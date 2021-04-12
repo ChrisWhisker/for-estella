@@ -15,18 +15,19 @@ class GARDENING_API UGardeningCharacterHelper : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	UGardeningCharacterHelper();
-
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
-
 	void UseItem();
+	void SwitchItem(int32 ItemNum);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	bool Trace(FHitResult& Hit, FVector& ShotDirection);
+	TArray<FString> Items;
+	int32 ActiveItem = 0;
 
 private:
 	UPROPERTY(EditAnywhere)
