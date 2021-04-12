@@ -62,7 +62,7 @@ protected:
 	/** Called to use the active item (plant seedling, water, attack, etc.) */
 	void Fire();
 
-	void SwitchItem(int32 ItemNum);
+	void SwitchTool(int32 ToolNum);
 
 protected:
 	// APawn interface

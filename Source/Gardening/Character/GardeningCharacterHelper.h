@@ -18,16 +18,21 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
-	void UseItem();
-	void SwitchItem(int32 ItemNum);
+	void UseTool();
+	void SwitchTool(int32 ToolNum);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 ActiveTool = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<FString> Tools;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	bool Trace(FHitResult& Hit, FVector& ShotDirection);
-	TArray<FString> Items;
-	int32 ActiveItem = 0;
+	
 
 private:
 	UPROPERTY(EditAnywhere)

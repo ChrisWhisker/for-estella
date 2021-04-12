@@ -12,9 +12,9 @@ UGardeningCharacterHelper::UGardeningCharacterHelper()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	Items.Add(TEXT("Seeds"));
-	Items.Add(TEXT("Water"));
-	Items.Add(TEXT("Axe"));
+	Tools.Add(TEXT("Seeds"));
+	Tools.Add(TEXT("Watering Can"));
+	Tools.Add(TEXT("Axe"));
 }
 
 
@@ -36,7 +36,7 @@ void UGardeningCharacterHelper::TickComponent(float DeltaTime, ELevelTick TickTy
 	// ...
 }
 
-void UGardeningCharacterHelper::UseItem()
+void UGardeningCharacterHelper::UseTool()
 {
 	// UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
 	// UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
@@ -56,7 +56,11 @@ void UGardeningCharacterHelper::UseItem()
 		const float PlantYaw = FMath::RandRange(0.f, 360.f);
 		UE_LOG(LogTemp, Warning, TEXT("%f"), PlantYaw);
 		const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
-		GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
+
+		if (ActiveTool == 0) // TODO Make this an enum
+		{
+			GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
+		}
 	}
 }
 
@@ -86,25 +90,25 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit, FVector& ShotDirection)
 	                                            Params);
 }
 
-void UGardeningCharacterHelper::SwitchItem(int32 ItemNum)
+void UGardeningCharacterHelper::SwitchTool(int32 ToolNum)
 {
-	if (ItemNum == ActiveItem) { return; }
+	if (ToolNum == ActiveTool) { return; }
 
-	if (ItemNum == -1) // Go to next item
+	if (ToolNum == -1) // Go to next item
 	{
-		if (ActiveItem < Items.Num() - 1)
+		if (ActiveTool < Tools.Num() - 1)
 		{
-			ActiveItem += 1;
+			ActiveTool += 1;
 		}
 		else
 		{
-			ActiveItem = 0;
+			ActiveTool = 0;
 		}
 	}
 	else // Go to selected item
 	{
-		ActiveItem = ItemNum;
+		ActiveTool = ToolNum;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("%s is active"), *Items[ActiveItem]);
+	UE_LOG(LogTemp, Warning, TEXT("%s is active"), *Tools[ActiveTool]);
 }
