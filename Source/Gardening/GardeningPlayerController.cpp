@@ -8,11 +8,12 @@ void AGardeningPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HudClass)
+	if (HudClass == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hud class is not set on the player controller."));
 		return;
 	}
 
+	Hud = CreateWidget(this, HudClass);
 	Hud->AddToViewport();
 }
