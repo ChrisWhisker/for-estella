@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Gardening/Character/GardeningCharacterHelper.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AGardeningCharacter
@@ -40,11 +41,14 @@ AGardeningCharacter::AGardeningCharacter()
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	// Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	Helper = CreateDefaultSubobject<UGardeningCharacterHelper>(TEXT("Helper"));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,6 +78,9 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AGardeningCharacter::OnResetVR);
+
+	// Garden-specific bindings
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::Fire);
 }
 
 
@@ -90,12 +97,12 @@ void AGardeningCharacter::OnResetVR()
 
 void AGardeningCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		Jump();
+	Jump();
 }
 
 void AGardeningCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		StopJumping();
+	StopJumping();
 }
 
 void AGardeningCharacter::TurnAtRate(float Rate)
@@ -126,15 +133,20 @@ void AGardeningCharacter::MoveForward(float Value)
 
 void AGardeningCharacter::MoveRight(float Value)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
+
 		// get right vector 
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AGardeningCharacter::Fire()
+{
+	Helper->UseItem();
 }

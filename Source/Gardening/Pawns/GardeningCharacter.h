@@ -18,6 +18,7 @@ class AGardeningCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
 public:
 	AGardeningCharacter();
 
@@ -58,6 +59,9 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	/** Called to use the active item (plant seedling, water, attack, etc.) */
+	void Fire();
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -68,5 +72,8 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-};
 
+private:
+	UPROPERTY(VisibleAnywhere, Category=Components)
+	class UGardeningCharacterHelper* Helper; // forward declaration
+};
