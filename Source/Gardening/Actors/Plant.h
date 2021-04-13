@@ -13,7 +13,10 @@ class GARDENING_API APlant : public AActor
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Growth")
-	float MaxScale = 2.f;
+	float MaxHeight = 3.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Growth")
+	float MaxWidth = 2.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Growth")
 	float GrowSpeed = 1.f;

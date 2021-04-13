@@ -9,9 +9,9 @@ UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	Tools.Add(TEXT("Seeds"));
-	Tools.Add(TEXT("Watering Can"));
-	Tools.Add(TEXT("Axe"));
+	// Tools.Add(TEXT("Seeds"));
+	// Tools.Add(TEXT("Watering Can"));
+	// Tools.Add(TEXT("Axe"));
 }
 
 
@@ -42,14 +42,22 @@ void UGardeningCharacterHelper::UseTool()
 		// UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
 		AActor* HitActor = Hit.GetActor();
 		if (!HitActor) { return; }
+		UE_LOG(LogTemp, Warning, TEXT("%s hit"), *HitActor->GetName());
 
-		const float PlantYaw = FMath::RandRange(0.f, 360.f);
-		UE_LOG(LogTemp, Warning, TEXT("%f"), PlantYaw);
-		const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
-
-		if (ActiveTool == 0)
+		if (Tools[ActiveTool] == Tool_Seeds)
 		{
+			const float PlantYaw = FMath::RandRange(0.f, 360.f);
+			// UE_LOG(LogTemp, Warning, TEXT("%f"), PlantYaw);
+			const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
 			GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
+		}
+		else if (Tools[ActiveTool] == Tool_WateringCan)
+		{
+			APlant* HitPlant = Cast<APlant>(HitActor);
+			if (HitPlant)
+			{
+				HitPlant->Grow();
+			}
 		}
 	}
 }
