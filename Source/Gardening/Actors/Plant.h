@@ -19,7 +19,6 @@ private:
 	float GrowSpeed = 1.f;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)
@@ -29,11 +28,7 @@ protected:
 	UStaticMeshComponent* Mesh;
 
 public:
-	// Sets default values for this actor's properties
 	APlant();
-
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// void Grow();
+	void Grow();
 };

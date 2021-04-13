@@ -5,11 +5,8 @@
 #include "DrawDebugHelpers.h"
 #include "Gardening/Actors/Plant.h"
 
-// Sets default values for this component's properties
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
 	Tools.Add(TEXT("Seeds"));
@@ -18,22 +15,15 @@ UGardeningCharacterHelper::UGardeningCharacterHelper()
 }
 
 
-// Called when the game starts
 void UGardeningCharacterHelper::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
 }
 
-
-// Called every frame
 void UGardeningCharacterHelper::TickComponent(float DeltaTime, ELevelTick TickType,
                                               FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UGardeningCharacterHelper::UseTool()
@@ -57,7 +47,7 @@ void UGardeningCharacterHelper::UseTool()
 		UE_LOG(LogTemp, Warning, TEXT("%f"), PlantYaw);
 		const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
 
-		if (ActiveTool == 0) // TODO Make this an enum
+		if (ActiveTool == 0)
 		{
 			GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
 		}
@@ -75,16 +65,11 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit, FVector& ShotDirection)
 	FRotator Rotation;
 	OwnerController->GetPlayerViewPoint(OUT StartLocation, OUT Rotation);
 	ShotDirection = -Rotation.Vector();
-
-	// Rotation.Vector() gives you the vector pointing in the direction of the provided rotation
 	const FVector EndLocation = StartLocation + Rotation.Vector() * MaxRange;
-
 	FCollisionQueryParams Params;
-	// Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 
 	// DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 2.f, 0, 10.f);
-
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
 	                                            ECollisionChannel::ECC_GameTraceChannel1,
 	                                            Params);
