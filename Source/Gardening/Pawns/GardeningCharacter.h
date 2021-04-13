@@ -61,6 +61,7 @@ protected:
 
 	/** Called to use the active item (plant seedling, water, attack, etc.) */
 	void Fire();
+	void FireReleased();
 
 	void SwitchTool(int32 ToolNum);
 

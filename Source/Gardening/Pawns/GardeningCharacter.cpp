@@ -81,6 +81,7 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// Garden-specific bindings
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::Fire);
+	// PlayerInputComponent->BindAction("Fire", IE_Released, this, &AGardeningCharacter::FireReleased);
 
 	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
 	InputComponent->BindAction<FCustomInputDelegate>
@@ -160,6 +161,11 @@ void AGardeningCharacter::MoveRight(float Value)
 }
 
 void AGardeningCharacter::Fire()
+{
+	Helper->UseTool();
+}
+
+void AGardeningCharacter::FireReleased()
 {
 	Helper->UseTool();
 }
