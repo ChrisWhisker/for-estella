@@ -23,6 +23,10 @@ private:
 	const FString Tool_WateringCan = TEXT("Watering Can");
 	const FString Tool_Axe = TEXT("Axe");
 
+	APlant* PlantSeed(FHitResult Hit);
+	bool WaterPlant(FHitResult Hit);
+	void UseAxe();
+
 public:
 	UGardeningCharacterHelper();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,

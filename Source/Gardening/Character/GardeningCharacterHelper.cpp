@@ -8,10 +8,6 @@
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// Tools.Add(TEXT("Seeds"));
-	// Tools.Add(TEXT("Watering Can"));
-	// Tools.Add(TEXT("Axe"));
 }
 
 
@@ -46,20 +42,44 @@ void UGardeningCharacterHelper::UseTool()
 
 		if (Tools[ActiveTool] == Tool_Seeds)
 		{
-			const float PlantYaw = FMath::RandRange(0.f, 360.f);
-			// UE_LOG(LogTemp, Warning, TEXT("%f"), PlantYaw);
-			const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
-			GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
+			PlantSeed(Hit);
 		}
 		else if (Tools[ActiveTool] == Tool_WateringCan)
 		{
-			APlant* HitPlant = Cast<APlant>(HitActor);
-			if (HitPlant)
-			{
-				HitPlant->Grow();
-			}
+			WaterPlant(Hit);
+		}
+		else if (Tools[ActiveTool] == Tool_Axe)
+		{
+			UseAxe();
 		}
 	}
+}
+
+APlant* UGardeningCharacterHelper::PlantSeed(FHitResult Hit)
+{
+	const float PlantYaw = FMath::RandRange(0.f, 360.f);
+	const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
+	AActor* Spawned = GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
+	APlant* SpawnedPlant = Cast<APlant>(Spawned);
+
+	if (SpawnedPlant) { return SpawnedPlant; }
+	return nullptr;
+}
+
+bool UGardeningCharacterHelper::WaterPlant(FHitResult Hit)
+{
+	APlant* HitPlant = Cast<APlant>(Hit.GetActor());
+	if (HitPlant)
+	{
+		HitPlant->Grow();
+		return true;
+	}
+	return false;
+}
+
+void UGardeningCharacterHelper::UseAxe()
+{
+	return;
 }
 
 bool UGardeningCharacterHelper::Trace(FHitResult& Hit, FVector& ShotDirection)
@@ -76,7 +96,6 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit, FVector& ShotDirection)
 	const FVector EndLocation = StartLocation + Rotation.Vector() * MaxRange;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
-
 	// DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 2.f, 0, 10.f);
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
 	                                            ECollisionChannel::ECC_GameTraceChannel1,
