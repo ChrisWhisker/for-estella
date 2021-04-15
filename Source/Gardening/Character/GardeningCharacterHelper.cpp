@@ -57,6 +57,13 @@ void UGardeningCharacterHelper::UseTool()
 
 APlant* UGardeningCharacterHelper::PlantSeed(FHitResult Hit)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Hit class is %s"), *Hit.GetActor()->GetClass()->GetName());
+
+	if (!Hit.GetActor()->GetClass()->GetName().Contains(TEXT("Landscape")))
+	{
+		return nullptr;
+	}
+
 	const float PlantYaw = FMath::RandRange(0.f, 360.f);
 	const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
 	AActor* Spawned = GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
