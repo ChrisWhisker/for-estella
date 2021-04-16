@@ -4,6 +4,7 @@
 #include "GardeningCharacterHelper.h"
 #include "DrawDebugHelpers.h"
 #include "Gardening/Actors/Plant.h"
+#include "Kismet/GameplayStatics.h"
 
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
@@ -68,6 +69,7 @@ APlant* UGardeningCharacterHelper::PlantSeed(FHitResult Hit)
 	const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
 	AActor* Spawned = GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
 	APlant* SpawnedPlant = Cast<APlant>(Spawned);
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), PlantingSound, SpawnedPlant->GetActorLocation());
 
 	if (SpawnedPlant) { return SpawnedPlant; }
 	return nullptr;
@@ -81,6 +83,7 @@ bool UGardeningCharacterHelper::WaterPlant(FHitResult Hit)
 		HitPlant->Grow();
 		return true;
 	}
+
 	return false;
 }
 
