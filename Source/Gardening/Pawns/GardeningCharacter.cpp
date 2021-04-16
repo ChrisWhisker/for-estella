@@ -81,20 +81,17 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// Garden-specific bindings
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::Fire);
-	// PlayerInputComponent->BindAction("Fire", IE_Released, this, &AGardeningCharacter::FireReleased);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AGardeningCharacter::FireReleased);
 
 	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
-	InputComponent->BindAction<FCustomInputDelegate>
-		("SwitchTool", IE_Pressed, this, &AGardeningCharacter::SwitchTool, -1);
+	InputComponent->BindAction<FCustomInputDelegate>("SwitchTool", IE_Pressed, this, &AGardeningCharacter::SwitchTool,
+	                                                 -1);
 	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
-	InputComponent->BindAction<FCustomInputDelegate>
-		("Tool1", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 0);
+	InputComponent->BindAction<FCustomInputDelegate>("Tool1", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 0);
 	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
-	InputComponent->BindAction<FCustomInputDelegate>
-		("Tool2", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 1);
+	InputComponent->BindAction<FCustomInputDelegate>("Tool2", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 1);
 	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
-	InputComponent->BindAction<FCustomInputDelegate>
-		("Tool3", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 2);
+	InputComponent->BindAction<FCustomInputDelegate>("Tool3", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 2);
 }
 
 
@@ -162,12 +159,14 @@ void AGardeningCharacter::MoveRight(float Value)
 
 void AGardeningCharacter::Fire()
 {
+	bIsFireHeld = true;
 	Helper->UseTool();
 }
 
 void AGardeningCharacter::FireReleased()
 {
-	Helper->UseTool();
+	bIsFireHeld = false;
+	Helper->StopUsingTool();
 }
 
 void AGardeningCharacter::SwitchTool(int32 ToolNum)

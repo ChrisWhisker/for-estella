@@ -65,7 +65,6 @@ protected:
 
 	void SwitchTool(int32 ToolNum);
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
@@ -78,5 +77,8 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category=Components)
-	class UGardeningCharacterHelper* Helper; // forward declaration
+	class UGardeningCharacterHelper* Helper;
+
+	UPROPERTY()
+	bool bIsFireHeld = false; // Is the fire button currently held down?
 };

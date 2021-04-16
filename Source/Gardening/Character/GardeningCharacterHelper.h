@@ -22,13 +22,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = "References")
 	USoundBase* PlantingSound;
 
-
 	const FString Tool_Seeds = TEXT("Seeds");
 	const FString Tool_WateringCan = TEXT("Watering Can");
 	const FString Tool_Axe = TEXT("Axe");
 
+	UPROPERTY()
+	APlant* WateredPlant;
+
 	APlant* PlantSeed(FHitResult Hit);
-	bool WaterPlant(FHitResult Hit);
+	void WaterPlant(FHitResult Hit);
 	void UseAxe();
 
 public:
@@ -36,6 +38,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	void UseTool();
+	void StopUsingTool();
 	void SwitchTool(int32 NewToolIndex);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -46,5 +49,5 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	bool Trace(FHitResult& Hit, FVector& ShotDirection);
+	bool Trace(FHitResult& Hit);
 };

@@ -11,7 +11,6 @@ UGardeningCharacterHelper::UGardeningCharacterHelper()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
 void UGardeningCharacterHelper::BeginPlay()
 {
 	Super::BeginPlay();
@@ -21,22 +20,24 @@ void UGardeningCharacterHelper::TickComponent(float DeltaTime, ELevelTick TickTy
                                               FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FHitResult Hit;
+	bool bSuccess = Trace(Hit);
+	if (!bSuccess) { return; }
+	if (!Cast<APlant>(Hit.GetActor()))
+	{
+		StopUsingTool();
+	}
 }
 
 void UGardeningCharacterHelper::UseTool()
 {
-	// UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
-	// UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
-
 	FHitResult Hit;
-	FVector ShotDirection;
-	bool bSuccess = Trace(Hit, ShotDirection);
+	bool bSuccess = Trace(Hit);
 	// UE_LOG(LogTemp, Warning, TEXT("%s"), bSuccess ? TEXT("true") : TEXT("false"));
 
 	if (bSuccess)
 	{
-		// UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.Location, ShotDirection.Rotation());
-		// UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
 		AActor* HitActor = Hit.GetActor();
 		if (!HitActor) { return; }
 		UE_LOG(LogTemp, Warning, TEXT("%s hit"), *HitActor->GetName());
@@ -53,6 +54,14 @@ void UGardeningCharacterHelper::UseTool()
 		{
 			UseAxe();
 		}
+	}
+}
+
+void UGardeningCharacterHelper::StopUsingTool()
+{
+	if (WateredPlant)
+	{
+		WateredPlant->StopGrowing();
 	}
 }
 
@@ -75,16 +84,14 @@ APlant* UGardeningCharacterHelper::PlantSeed(FHitResult Hit)
 	return nullptr;
 }
 
-bool UGardeningCharacterHelper::WaterPlant(FHitResult Hit)
+void UGardeningCharacterHelper::WaterPlant(FHitResult Hit)
 {
 	APlant* HitPlant = Cast<APlant>(Hit.GetActor());
 	if (HitPlant)
 	{
-		HitPlant->Grow();
-		return true;
+		HitPlant->StartGrowing();
+		WateredPlant = HitPlant;
 	}
-
-	return false;
 }
 
 void UGardeningCharacterHelper::UseAxe()
@@ -92,7 +99,7 @@ void UGardeningCharacterHelper::UseAxe()
 	return;
 }
 
-bool UGardeningCharacterHelper::Trace(FHitResult& Hit, FVector& ShotDirection)
+bool UGardeningCharacterHelper::Trace(FHitResult& Hit)
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (!OwnerPawn) { return false; }
@@ -102,11 +109,10 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit, FVector& ShotDirection)
 	FVector StartLocation;
 	FRotator Rotation;
 	OwnerController->GetPlayerViewPoint(OUT StartLocation, OUT Rotation);
-	ShotDirection = -Rotation.Vector();
 	const FVector EndLocation = StartLocation + Rotation.Vector() * MaxRange;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
-	// DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 2.f, 0, 10.f);
+
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
 	                                            ECollisionChannel::ECC_GameTraceChannel1,
 	                                            Params);
@@ -124,6 +130,4 @@ void UGardeningCharacterHelper::SwitchTool(const int32 NewToolIndex)
 	{
 		ActiveTool = NewToolIndex;
 	}
-
-	// UE_LOG(LogTemp, Warning, TEXT("%s is active"), *Tools[ActiveTool]);
 }

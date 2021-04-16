@@ -3,23 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "Plant.generated.h"
+
+class UCurveFloat;
 
 UCLASS()
 class GARDENING_API APlant : public AActor
 {
 	GENERATED_BODY()
-
-private:
-	UPROPERTY(EditDefaultsOnly, Category = "Growth")
-	float MaxHeight = 3.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Growth")
-	float MaxWidth = 2.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Growth")
-	float GrowSpeed = 1.f;
 
 protected:
 	virtual void BeginPlay() override;
@@ -30,8 +23,27 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
 
+	FTimeline CurveTimeline;
+
+	UPROPERTY(EditAnywhere, Category="Growth")
+	UCurveFloat* GrowthCurve;
+
+	UPROPERTY()
+	FVector StartScale;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Growth")
+	FVector MaxScale = FVector(1, 1, 2);
+
 public:
 	APlant();
 	virtual void Tick(float DeltaTime) override;
-	void Grow();
+
+	UFUNCTION()
+	void TimelineProgress(float Value);
+
+	UFUNCTION()
+	void StartGrowing();
+
+	UFUNCTION()
+	void StopGrowing();
 };
