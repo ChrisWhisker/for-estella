@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Growth")
 	FVector MaxScale = FVector(1, 1, 2);
 
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	USoundBase* Rustle;
+
 public:
 	APlant();
 	virtual void Tick(float DeltaTime) override;
@@ -46,4 +49,9 @@ public:
 
 	UFUNCTION()
 	void StopGrowing();
+
+	UFUNCTION()
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
+	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	                    const FHitResult& SweepResult);
 };

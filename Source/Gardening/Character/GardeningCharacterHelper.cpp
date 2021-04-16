@@ -40,7 +40,6 @@ void UGardeningCharacterHelper::UseTool()
 	{
 		AActor* HitActor = Hit.GetActor();
 		if (!HitActor) { return; }
-		UE_LOG(LogTemp, Warning, TEXT("%s hit"), *HitActor->GetName());
 
 		if (Tools[ActiveTool] == Tool_Seeds)
 		{
@@ -67,8 +66,6 @@ void UGardeningCharacterHelper::StopUsingTool()
 
 APlant* UGardeningCharacterHelper::PlantSeed(FHitResult Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hit class is %s"), *Hit.GetActor()->GetClass()->GetName());
-
 	if (!Hit.GetActor()->GetClass()->GetName().Contains(TEXT("Landscape")))
 	{
 		return nullptr;

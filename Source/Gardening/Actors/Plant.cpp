@@ -3,6 +3,7 @@
 
 #include "Plant.h"
 #include "Components/TimelineComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 APlant::APlant()
 {
@@ -11,6 +12,7 @@ APlant::APlant()
 	SetRootComponent(Root);
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+	Mesh->OnComponentBeginOverlap.AddDynamic(this, &APlant::OnOverlapBegin);
 }
 
 void APlant::BeginPlay()
@@ -47,4 +49,13 @@ void APlant::StartGrowing()
 void APlant::StopGrowing()
 {
 	CurveTimeline.Stop();
+}
+
+void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (CurveTimeline.GetPlaybackPosition() >= CurveTimeline.GetTimelineLength() * 0.4)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
+	}
 }
