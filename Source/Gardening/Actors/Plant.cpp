@@ -19,6 +19,9 @@ void APlant::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlantingSound, GetActorLocation());
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PlantingParticle, GetActorLocation());
+
 	if (GrowthCurve)
 	{
 		FOnTimelineFloat TimelineProgress;

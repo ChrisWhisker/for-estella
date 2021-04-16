@@ -19,9 +19,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "References", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class APlant> PlantBpClass;
 
-	UPROPERTY(EditAnywhere, Category = "References")
-	USoundBase* PlantingSound;
-
 	const FString Tool_Seeds = TEXT("Seeds");
 	const FString Tool_WateringCan = TEXT("Watering Can");
 	const FString Tool_Axe = TEXT("Axe");

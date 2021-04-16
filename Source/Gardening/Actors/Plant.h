@@ -37,6 +37,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	USoundBase* Rustle;
 
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	USoundBase* PlantingSound;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	UParticleSystem* PlantingParticle;
+
 public:
 	APlant();
 	virtual void Tick(float DeltaTime) override;
