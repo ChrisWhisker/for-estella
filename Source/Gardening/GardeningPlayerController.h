@@ -14,8 +14,13 @@ class GARDENING_API AGardeningPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	void ManageGrowthWidget(bool bAdding);
+	
 protected:
 	virtual void BeginPlay() override;
+	void SetUpHud();
+	void SetUpGrowthWidget();
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -23,4 +28,10 @@ private:
 
 	UPROPERTY()
 	UUserWidget* Hud;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> GrowthWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* GrowthWidget;
 };

@@ -26,38 +26,40 @@ void APlant::BeginPlay()
 	{
 		FOnTimelineFloat TimelineProgress;
 		TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
-		CurveTimeline.AddInterpFloat(GrowthCurve, TimelineProgress);
-		CurveTimeline.SetLooping(false);
+		GrowthTimeline.AddInterpFloat(GrowthCurve, TimelineProgress);
+		GrowthTimeline.SetLooping(false);
 		StartScale = Mesh->GetRelativeScale3D();
+		GrowthTimelineLength = GrowthTimeline.GetTimelineLength();
 	}
 }
 
 void APlant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CurveTimeline.TickTimeline(DeltaTime);
+	GrowthTimeline.TickTimeline(DeltaTime);
 }
 
 void APlant::TimelineProgress(float Value)
 {
 	FVector NewMeshScale = FMath::Lerp(StartScale, MaxScale, Value);
 	Mesh->SetRelativeScale3D(NewMeshScale);
+	GrowthProgress = GrowthTimeline.GetPlaybackPosition();
 }
 
 void APlant::StartGrowing()
 {
-	CurveTimeline.Play();
+	GrowthTimeline.Play();
 }
 
 void APlant::StopGrowing()
 {
-	CurveTimeline.Stop();
+	GrowthTimeline.Stop();
 }
 
 void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                             int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (CurveTimeline.GetPlaybackPosition() >= CurveTimeline.GetTimelineLength() * 0.4)
+	if (GrowthTimeline.GetPlaybackPosition() >= GrowthTimeline.GetTimelineLength() * 0.4)
 	{
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
 	}

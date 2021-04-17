@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GardeningCharacterHelper.generated.h"
 
+class AGardeningPlayerController;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class GARDENING_API UGardeningCharacterHelper : public UActorComponent
@@ -23,12 +24,12 @@ private:
 	const FString Tool_WateringCan = TEXT("Watering Can");
 	const FString Tool_Axe = TEXT("Axe");
 
-	UPROPERTY()
-	APlant* WateredPlant;
-
 	APlant* PlantSeed(FHitResult Hit);
 	void WaterPlant(FHitResult Hit);
 	void UseAxe();
+
+	UPROPERTY()
+	AGardeningPlayerController* GardeningPlayerController;
 
 public:
 	UGardeningCharacterHelper();
@@ -47,4 +48,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	bool Trace(FHitResult& Hit);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	APlant* WateredPlant;
 };

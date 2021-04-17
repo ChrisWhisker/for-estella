@@ -2,9 +2,11 @@
 
 
 #include "GardeningCharacterHelper.h"
-#include "DrawDebugHelpers.h"
+#include "Blueprint/UserWidget.h"
+#include "Gardening/GardeningPlayerController.h"
 #include "Gardening/Actors/Plant.h"
 #include "Kismet/GameplayStatics.h"
+// #include "DrawDebugHelpers.h"
 
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
@@ -14,6 +16,12 @@ UGardeningCharacterHelper::UGardeningCharacterHelper()
 void UGardeningCharacterHelper::BeginPlay()
 {
 	Super::BeginPlay();
+	APlayerController* FirstPlayerController = GetWorld()->GetFirstPlayerController();
+	GardeningPlayerController = Cast<AGardeningPlayerController>(FirstPlayerController);
+	if (!GardeningPlayerController)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Player controller is not being retrieved on the character helper."));
+	}
 }
 
 void UGardeningCharacterHelper::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -34,7 +42,6 @@ void UGardeningCharacterHelper::UseTool()
 {
 	FHitResult Hit;
 	bool bSuccess = Trace(Hit);
-	// UE_LOG(LogTemp, Warning, TEXT("%s"), bSuccess ? TEXT("true") : TEXT("false"));
 
 	if (bSuccess)
 	{
@@ -60,7 +67,9 @@ void UGardeningCharacterHelper::StopUsingTool()
 {
 	if (WateredPlant)
 	{
+		GardeningPlayerController->ManageGrowthWidget(false);
 		WateredPlant->StopGrowing();
+		WateredPlant = nullptr;
 	}
 }
 
@@ -85,6 +94,7 @@ void UGardeningCharacterHelper::WaterPlant(FHitResult Hit)
 	APlant* HitPlant = Cast<APlant>(Hit.GetActor());
 	if (HitPlant)
 	{
+		GardeningPlayerController->ManageGrowthWidget(true);
 		HitPlant->StartGrowing();
 		WateredPlant = HitPlant;
 	}

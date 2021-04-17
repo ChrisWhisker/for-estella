@@ -23,7 +23,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
 
-	FTimeline CurveTimeline;
+	UPROPERTY()
+	FTimeline GrowthTimeline;
 
 	UPROPERTY(EditAnywhere, Category="Growth")
 	UCurveFloat* GrowthCurve;
@@ -42,6 +43,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	UParticleSystem* PlantingParticle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Growth")
+	float GrowthProgress = 0.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Growth")
+	float GrowthTimelineLength;
 
 public:
 	APlant();
