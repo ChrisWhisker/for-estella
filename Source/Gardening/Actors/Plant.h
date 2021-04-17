@@ -14,6 +14,24 @@ class GARDENING_API APlant : public AActor
 {
 	GENERATED_BODY()
 
+public:
+	APlant();
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void TimelineProgress(float Value);
+
+	UFUNCTION()
+	void StartGrowing();
+
+	UFUNCTION()
+	void StopGrowing();
+
+	UFUNCTION()
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
+	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	                    const FHitResult& SweepResult);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -49,22 +67,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Growth")
 	float GrowthTimelineLength;
-
-public:
-	APlant();
-	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION()
-	void TimelineProgress(float Value);
-
-	UFUNCTION()
-	void StartGrowing();
-
-	UFUNCTION()
-	void StopGrowing();
-
-	UFUNCTION()
-	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
-	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-	                    const FHitResult& SweepResult);
 };
