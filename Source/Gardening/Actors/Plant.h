@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "Plant.generated.h"
 
+class UWidgetComponent;
 class UCurveFloat;
 
 UCLASS()
@@ -50,6 +51,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Growth")
 	float GrowthTimelineLength;
 
+	UWidgetComponent* ProgressBarWidget;
+
 public:
 	APlant();
 	virtual void Tick(float DeltaTime) override;
@@ -67,4 +70,6 @@ public:
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
 	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 	                    const FHitResult& SweepResult);
+	                    
+	void SetProgressBarVisibility(bool bSetVisible);
 };

@@ -2,7 +2,9 @@
 
 
 #include "Plant.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/TimelineComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 APlant::APlant()
@@ -30,6 +32,16 @@ void APlant::BeginPlay()
 		GrowthTimeline.SetLooping(false);
 		StartScale = Mesh->GetRelativeScale3D();
 		GrowthTimelineLength = GrowthTimeline.GetTimelineLength();
+	}
+
+	UActorComponent* ProgressBar = this->GetComponentByClass(UWidgetComponent::StaticClass());
+	if (ProgressBar)
+	{
+		ProgressBarWidget = Cast<UWidgetComponent>(ProgressBar);
+		if (ProgressBarWidget)
+		{
+			ProgressBarWidget->SetVisibility(false);
+		}
 	}
 }
 
@@ -62,5 +74,13 @@ void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 	if (GrowthTimeline.GetPlaybackPosition() >= GrowthTimeline.GetTimelineLength() * 0.4)
 	{
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
+	}
+}
+
+void APlant::SetProgressBarVisibility(bool bSetVisible)
+{
+	if (ProgressBarWidget)
+	{
+		ProgressBarWidget->SetVisibility(bSetVisible);
 	}
 }

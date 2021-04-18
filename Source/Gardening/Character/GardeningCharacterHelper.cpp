@@ -3,8 +3,8 @@
 
 #include "GardeningCharacterHelper.h"
 #include "Blueprint/UserWidget.h"
-#include "Gardening/GardeningPlayerController.h"
 #include "Gardening/Actors/Plant.h"
+#include "Gardening/GardeningPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 // #include "DrawDebugHelpers.h"
 
@@ -67,7 +67,7 @@ void UGardeningCharacterHelper::StopUsingTool()
 {
 	if (WateredPlant)
 	{
-		GardeningPlayerController->ManageGrowthWidget(false);
+		WateredPlant->SetProgressBarVisibility(false);
 		WateredPlant->StopGrowing();
 		WateredPlant = nullptr;
 	}
@@ -94,7 +94,7 @@ void UGardeningCharacterHelper::WaterPlant(FHitResult Hit)
 	APlant* HitPlant = Cast<APlant>(Hit.GetActor());
 	if (HitPlant)
 	{
-		GardeningPlayerController->ManageGrowthWidget(true);
+		HitPlant->SetProgressBarVisibility(true);
 		HitPlant->StartGrowing();
 		WateredPlant = HitPlant;
 	}

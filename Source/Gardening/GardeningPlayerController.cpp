@@ -43,20 +43,3 @@ void AGardeningPlayerController::SetUpGrowthWidget()
 		return;
 	}
 }
-
-void AGardeningPlayerController::ManageGrowthWidget(bool bAdding)
-{
-	if (!GrowthWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Growth Widget is not being created on the player controller."));
-	}
-
-	if (bAdding && !GrowthWidget->IsInViewport())
-	{
-		GrowthWidget->AddToViewport();
-	}
-	else if (!bAdding && GrowthWidget->IsInViewport())
-	{
-		GrowthWidget->RemoveFromViewport();
-	}
-}
