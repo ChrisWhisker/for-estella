@@ -20,10 +20,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "References", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class APlant> PlantBpClass;
 
-	const FString Tool_Seeds = TEXT("Seeds");
-	const FString Tool_WateringCan = TEXT("Watering Can");
-	const FString Tool_Axe = TEXT("Axe");
-
 	APlant* PlantSeed(FHitResult Hit);
 	void WaterPlant(FHitResult Hit);
 	void UseAxe();
@@ -42,8 +38,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 ActiveTool = 0;
 
+	// Effectively constants
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString Tool_Seeds = TEXT("Seeds");
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString Tool_WateringCan = TEXT("Watering Can");
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString Tool_Axe = TEXT("Axe");
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FString> Tools = {Tool_Seeds, Tool_WateringCan, Tool_Axe};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 SeedCount = 10;
 
 protected:
 	virtual void BeginPlay() override;

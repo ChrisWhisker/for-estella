@@ -48,9 +48,10 @@ void UGardeningCharacterHelper::UseTool()
 		AActor* HitActor = Hit.GetActor();
 		if (!HitActor) { return; }
 
-		if (Tools[ActiveTool] == Tool_Seeds)
+		if (Tools[ActiveTool] == Tool_Seeds && SeedCount > 0)
 		{
 			PlantSeed(Hit);
+			SeedCount--;
 		}
 		else if (Tools[ActiveTool] == Tool_WateringCan)
 		{
