@@ -75,10 +75,10 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-private:
 	UPROPERTY(VisibleAnywhere, Category=Components)
 	class UGardeningCharacterHelper* Helper;
 
+private:
 	UPROPERTY()
 	bool bIsFireHeld = false; // Is the fire button currently held down?
 };

@@ -11,6 +11,8 @@
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	SeedCount = MaxSeeds;
 }
 
 void UGardeningCharacterHelper::BeginPlay()
@@ -137,4 +139,19 @@ void UGardeningCharacterHelper::SwitchTool(const int32 NewToolIndex)
 	{
 		ActiveTool = NewToolIndex;
 	}
+}
+
+int32 UGardeningCharacterHelper::GetMaxSeeds()
+{
+	return MaxSeeds;
+}
+
+int32 UGardeningCharacterHelper::GetSeedCount()
+{
+	return SeedCount;
+}
+
+void UGardeningCharacterHelper::SetSeedCount(int32 NewSeedCount)
+{
+	SeedCount = NewSeedCount;
 }

@@ -49,8 +49,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FString> Tools = {Tool_Seeds, Tool_WateringCan, Tool_Axe};
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int32 SeedCount = 10;
+	UFUNCTION(BlueprintGetter)
+	int32 GetMaxSeeds();
+
+	UFUNCTION(BlueprintGetter)
+	int32 GetSeedCount();
+
+	UFUNCTION(BlueprintSetter)
+	void SetSeedCount(int32 NewSeedCount);
 
 protected:
 	virtual void BeginPlay() override;
@@ -58,4 +64,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APlant* WateredPlant;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 MaxSeeds = 10;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 SeedCount;
 };
