@@ -46,6 +46,10 @@ void ASeedPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
                                  const FHitResult& SweepResult)
 {
 	if (!bIsActive) { return; }
+
+	AGardeningCharacter* GardeningCharacter = Cast<AGardeningCharacter>(OtherActor);
+	if (!GardeningCharacter) { return; }
+
 	const int32 SeedsToAdd = FMath::Min(3, Helper->GetMaxSeeds() - Helper->GetSeedCount());
 	Helper->SetSeedCount(Helper->GetSeedCount() + SeedsToAdd);
 

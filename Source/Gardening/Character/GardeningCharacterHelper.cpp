@@ -53,7 +53,6 @@ void UGardeningCharacterHelper::UseTool()
 		if (Tools[ActiveTool] == Tool_Seeds && SeedCount > 0)
 		{
 			PlantSeed(Hit);
-			SeedCount--;
 		}
 		else if (Tools[ActiveTool] == Tool_WateringCan)
 		{
@@ -88,7 +87,11 @@ APlant* UGardeningCharacterHelper::PlantSeed(FHitResult Hit)
 	AActor* Spawned = GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
 	APlant* SpawnedPlant = Cast<APlant>(Spawned);
 
-	if (SpawnedPlant) { return SpawnedPlant; }
+	if (SpawnedPlant)
+	{
+		SeedCount--;
+		return SpawnedPlant;
+	}
 	return nullptr;
 }
 
@@ -130,6 +133,7 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit)
 void UGardeningCharacterHelper::SwitchTool(const int32 NewToolIndex)
 {
 	if (NewToolIndex == ActiveTool) { return; }
+	StopUsingTool();
 
 	if (NewToolIndex == -1) // Go to next item
 	{
