@@ -6,6 +6,7 @@
 #include "Gardening/Character/GardeningCharacterHelper.h"
 #include "Gardening/Pawns/GardeningCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 
 ASeedPickup::ASeedPickup()
 {
@@ -13,8 +14,10 @@ ASeedPickup::ASeedPickup()
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(Root);
+	TrunkMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Trunk"));
+	TrunkMesh->SetupAttachment(Root);
+	LeavesMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Leaves"));
+	LeavesMesh->SetupAttachment(Root);
 	Trigger = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Trigger"));
 	Trigger->SetupAttachment(Root);
 	Trigger->OnComponentBeginOverlap.AddDynamic(this, &ASeedPickup::OnOverlapBegin);
@@ -39,9 +42,24 @@ void ASeedPickup::Tick(float DeltaTime)
 }
 
 void ASeedPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-                                 UPrimitiveComponent* OtherComp,
-                                 int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                 const FHitResult& SweepResult)
 {
+	if (!bIsActive) { return; }
 	const int32 SeedsToAdd = FMath::Min(3, Helper->GetMaxSeeds() - Helper->GetSeedCount());
 	Helper->SetSeedCount(Helper->GetSeedCount() + SeedsToAdd);
+
+	if (SeedsToAdd > 0)
+	{
+		bIsActive = false;
+		LeavesMesh->SetHiddenInGame(true);
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
+		GetWorldTimerManager().SetTimer(ResetTimer, this, &ASeedPickup::ResetPickup, ResetDelay);
+	}
+}
+
+void ASeedPickup::ResetPickup()
+{
+	bIsActive = true;
+	LeavesMesh->SetHiddenInGame(false);
 }

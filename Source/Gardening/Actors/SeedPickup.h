@@ -13,10 +13,8 @@ class GARDENING_API ASeedPickup : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ASeedPickup();
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
@@ -27,15 +25,30 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	void ResetPickup();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USceneComponent* Root;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* Mesh;
+	UStaticMeshComponent* TrunkMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* LeavesMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UCapsuleComponent* Trigger;
 
 	UPROPERTY()
 	class UGardeningCharacterHelper* Helper;
+
+	bool bIsActive = true;
+
+	UPROPERTY(EditAnywhere)
+	float ResetDelay = 5.f;
+
+	FTimerHandle ResetTimer;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	USoundBase* Rustle;
 };
