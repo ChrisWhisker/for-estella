@@ -4,7 +4,7 @@
 #include "SeedPickup.h"
 #include "Components/CapsuleComponent.h"
 #include "Gardening/Character/GardeningCharacterHelper.h"
-#include "Gardening/Pawns/GardeningCharacter.h"
+#include "Gardening/Character/GardeningCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 

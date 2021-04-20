@@ -7,69 +7,71 @@
 #include "GameFramework/Actor.h"
 #include "Plant.generated.h"
 
-class UWidgetComponent;
 class UCurveFloat;
+class UWidgetComponent;
 
 UCLASS()
 class GARDENING_API APlant : public AActor
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void BeginPlay() override;
+public:
+	////////// FUNCTIONS //////////
+	APlant();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	USceneComponent* Root;
+	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* Mesh;
+	void StartGrowing();
 
-	UPROPERTY()
-	FTimeline GrowthTimeline;
+	void StopGrowing();
 
-	UPROPERTY(EditAnywhere, Category="Growth")
-	UCurveFloat* GrowthCurve;
+	void SetProgressBarVisibility(bool bSetVisible) const;
 
-	UPROPERTY()
-	FVector StartScale;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Growth")
-	FVector MaxScale = FVector(1, 1, 2);
-
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	USoundBase* Rustle;
-
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	USoundBase* PlantingSound;
-
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	UParticleSystem* PlantingParticle;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Growth")
+	////////// PROPERTIES //////////
+	UPROPERTY(BlueprintReadOnly)
 	float GrowthProgress = 0.f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Growth")
+	UPROPERTY(BlueprintReadOnly)
 	float GrowthTimelineLength;
 
-	UWidgetComponent* ProgressBarWidget;
-
-public:
-	APlant();
-	virtual void Tick(float DeltaTime) override;
+protected:
+	////////// FUNCTIONS //////////
+	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void TimelineProgress(float Value);
 
 	UFUNCTION()
-	void StartGrowing();
-
-	UFUNCTION()
-	void StopGrowing();
-
-	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
 	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 	                    const FHitResult& SweepResult);
-	                    
-	void SetProgressBarVisibility(bool bSetVisible);
+
+	////////// PROPERTIES //////////
+	UPROPERTY()
+	USceneComponent* Root;
+
+	UPROPERTY()
+	UStaticMeshComponent* Mesh;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	USoundBase* Rustle;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	USoundBase* PlantingSound;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	UParticleSystem* PlantingParticle;
+
+	UPROPERTY(Category="Growth", EditDefaultsOnly)
+	UCurveFloat* GrowthCurve;
+
+	UPROPERTY(Category="Growth", EditDefaultsOnly)
+	FVector MaxScale = FVector(1, 1, 2);
+
+	UPROPERTY()
+	UWidgetComponent* ProgressBarWidget;
+
+	FTimeline GrowthTimeline;
+
+	FVector StartScale;
 };
