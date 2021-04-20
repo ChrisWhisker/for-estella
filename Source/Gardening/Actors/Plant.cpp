@@ -38,11 +38,7 @@ void APlant::BeginPlay()
 	if (!ProgressBar) { UE_LOG(LogTemp, Warning, TEXT("ProgressBar is not found")); }
 
 	ProgressBarWidget = Cast<UWidgetComponent>(ProgressBar);
-
-	if (!ProgressBarWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Problem encountered while casting ProgressBar component"));
-	}
+	if (!ProgressBarWidget) { UE_LOG(LogTemp, Warning, TEXT("Couldn't cast ProgressBar component")); }
 
 	ProgressBarWidget->SetVisibility(false);
 }
@@ -59,13 +55,11 @@ void APlant::Tick(float DeltaTime)
 
 void APlant::StartGrowing()
 {
-	UE_LOG(LogTemp, Warning, TEXT("StartGrowing called"));
 	GrowthTimeline.Play();
 }
 
 void APlant::StopGrowing()
 {
-	UE_LOG(LogTemp, Warning, TEXT("StopGrowing called"));
 	GrowthTimeline.Stop();
 }
 
@@ -74,14 +68,12 @@ void APlant::TimelineProgress(float Value)
 	const FVector NewMeshScale = FMath::Lerp(StartScale, MaxScale, Value);
 	Mesh->SetRelativeScale3D(NewMeshScale);
 	GrowthProgress = GrowthTimeline.GetPlaybackPosition();
-	UE_LOG(LogTemp, Warning, TEXT("TimelineProgress called"));
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                             int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin called"));
 	if (GrowthTimeline.GetPlaybackPosition() >= GrowthTimeline.GetTimelineLength() * 0.4)
 	{
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());

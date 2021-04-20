@@ -3,14 +3,13 @@
 
 #include "SeedPickup.h"
 #include "Components/CapsuleComponent.h"
-#include "Gardening/Character/GardeningCharacterHelper.h"
 #include "Gardening/Character/GardeningCharacter.h"
+#include "Gardening/Character/GardeningCharacterHelper.h"
 #include "Kismet/GameplayStatics.h"
-#include "TimerManager.h"
 
 ASeedPickup::ASeedPickup()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
@@ -29,16 +28,8 @@ void ASeedPickup::BeginPlay()
 
 	ACharacter* GenericCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AGardeningCharacter* GardeningCharacter = Cast<AGardeningCharacter>(GenericCharacter);
-	if (!GardeningCharacter)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't get the GardeningCharacter in SeedPickup"));
-	}
+	if (!GardeningCharacter) { UE_LOG(LogTemp, Warning, TEXT("Can't get the GardeningCharacter in SeedPickup")); }
 	Helper = GardeningCharacter->Helper;
-}
-
-void ASeedPickup::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void ASeedPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
