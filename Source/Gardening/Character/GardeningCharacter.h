@@ -31,7 +31,6 @@ public:
 	float BaseLookUpRate;
 
 protected:
-
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
 
@@ -60,7 +59,7 @@ protected:
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 	/** Called to use the active item (plant seedling, water, attack, etc.) */
-	void Fire();
+	void FirePressed();
 	void FireReleased();
 
 	void SwitchTool(int32 ToolNum);
@@ -69,16 +68,15 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	UPROPERTY()
+	bool bIsFireHeld = false; // Is the fire button currently held down?
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	UPROPERTY(VisibleAnywhere, Category=Components)
-	class UGardeningCharacterHelper* Helper;
-
-private:
 	UPROPERTY()
-	bool bIsFireHeld = false; // Is the fire button currently held down?
+	class UGardeningCharacterHelper* Helper;
 };

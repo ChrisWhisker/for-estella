@@ -80,7 +80,7 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AGardeningCharacter::OnResetVR);
 
 	// Garden-specific bindings
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::Fire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::FirePressed);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AGardeningCharacter::FireReleased);
 
 	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
@@ -156,7 +156,7 @@ void AGardeningCharacter::MoveRight(float Value)
 	}
 }
 
-void AGardeningCharacter::Fire()
+void AGardeningCharacter::FirePressed()
 {
 	bIsFireHeld = true;
 	Helper->UseTool();
@@ -168,7 +168,8 @@ void AGardeningCharacter::FireReleased()
 	Helper->StopUsingTool();
 }
 
-void AGardeningCharacter::SwitchTool(int32 ToolNum)
+// ReSharper disable once CppMemberFunctionMayBeConst
+void AGardeningCharacter::SwitchTool(const int32 ToolNum)
 {
 	Helper->SwitchTool(ToolNum);
 }

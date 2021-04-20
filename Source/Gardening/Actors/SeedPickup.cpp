@@ -28,7 +28,7 @@ void ASeedPickup::BeginPlay()
 
 	ACharacter* GenericCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AGardeningCharacter* GardeningCharacter = Cast<AGardeningCharacter>(GenericCharacter);
-	if (!GardeningCharacter) { UE_LOG(LogTemp, Warning, TEXT("Can't get the GardeningCharacter in SeedPickup")); }
+	if (!GardeningCharacter) { UE_LOG(LogTemp, Error, TEXT("Can't get the GardeningCharacter in SeedPickup")); }
 	Helper = GardeningCharacter->Helper;
 }
 
@@ -41,8 +41,8 @@ void ASeedPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 	AGardeningCharacter* GardeningCharacter = Cast<AGardeningCharacter>(OtherActor);
 	if (!GardeningCharacter) { return; }
 
-	const int32 SeedsToAdd = FMath::Min(3, Helper->GetMaxSeeds() - Helper->GetSeedCount());
-	Helper->SetSeedCount(Helper->GetSeedCount() + SeedsToAdd);
+	const int32 SeedsToAdd = FMath::Min(3, Helper->GetMaxSeeds() - Helper->SeedCount);
+	Helper->SeedCount += SeedsToAdd;
 
 	if (SeedsToAdd > 0)
 	{

@@ -22,7 +22,7 @@ void UGardeningCharacterHelper::BeginPlay()
 	GardeningPlayerController = Cast<AGardeningPlayerController>(FirstPlayerController);
 	if (!GardeningPlayerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Player controller is not being retrieved on the character helper."));
+		UE_LOG(LogTemp, Error, TEXT("Player controller isn't found on the character helper."));
 	}
 }
 
@@ -31,37 +31,55 @@ void UGardeningCharacterHelper::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FHitResult Hit;
-	bool bSuccess = Trace(Hit);
-	if (!bSuccess) { return; }
-	if (!Cast<APlant>(Hit.GetActor()))
+	if (WateredPlant)
 	{
-		StopUsingTool();
+		FHitResult Hit;
+		const bool bTraceSucceeded = Trace(OUT Hit);
+		if (!bTraceSucceeded) { return; }
+
+		if (!Cast<APlant>(Hit.GetActor()))
+		{
+			StopUsingTool();
+		}
 	}
+}
+
+void UGardeningCharacterHelper::SwitchTool(const int32 NewToolIndex)
+{
+	if (NewToolIndex == ActiveTool) { return; }
+	StopUsingTool();
+
+	if (NewToolIndex == -1) // Go to next item
+		{
+		ActiveTool = (ActiveTool + 1) % Tools.Num();
+		}
+	else // Go to selected item
+		{
+		ActiveTool = NewToolIndex;
+		}
 }
 
 void UGardeningCharacterHelper::UseTool()
 {
 	FHitResult Hit;
-	bool bSuccess = Trace(Hit);
+	const bool bTraceSucceeded = Trace(Hit);
 
-	if (bSuccess)
+	if (!bTraceSucceeded) { return; }
+
+	AActor* HitActor = Hit.GetActor();
+	if (!HitActor) { return; }
+
+	if (Tools[ActiveTool] == Tool_Seeds && SeedCount > 0)
 	{
-		AActor* HitActor = Hit.GetActor();
-		if (!HitActor) { return; }
-
-		if (Tools[ActiveTool] == Tool_Seeds && SeedCount > 0)
-		{
-			PlantSeed(Hit);
-		}
-		else if (Tools[ActiveTool] == Tool_WateringCan)
-		{
-			WaterPlant(Hit);
-		}
-		else if (Tools[ActiveTool] == Tool_Axe)
-		{
-			UseAxe();
-		}
+		PlantSeed(Hit);
+	}
+	else if (Tools[ActiveTool] == Tool_WateringCan)
+	{
+		WaterPlant(Hit);
+	}
+	else if (Tools[ActiveTool] == Tool_Axe)
+	{
+		UseAxe();
 	}
 }
 
@@ -75,12 +93,9 @@ void UGardeningCharacterHelper::StopUsingTool()
 	}
 }
 
-APlant* UGardeningCharacterHelper::PlantSeed(FHitResult Hit)
+void UGardeningCharacterHelper::PlantSeed(const FHitResult Hit)
 {
-	if (!Hit.GetActor()->GetClass()->GetName().Contains(TEXT("Landscape")))
-	{
-		return nullptr;
-	}
+	if (!Hit.GetActor()->GetClass()->GetName().Contains(TEXT("Landscape"))) { return; }
 
 	const float PlantYaw = FMath::RandRange(0.f, 360.f);
 	const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
@@ -90,12 +105,10 @@ APlant* UGardeningCharacterHelper::PlantSeed(FHitResult Hit)
 	if (SpawnedPlant)
 	{
 		SeedCount--;
-		return SpawnedPlant;
 	}
-	return nullptr;
 }
 
-void UGardeningCharacterHelper::WaterPlant(FHitResult Hit)
+void UGardeningCharacterHelper::WaterPlant(const FHitResult Hit)
 {
 	APlant* HitPlant = Cast<APlant>(Hit.GetActor());
 	if (HitPlant)
@@ -106,15 +119,16 @@ void UGardeningCharacterHelper::WaterPlant(FHitResult Hit)
 	}
 }
 
-void UGardeningCharacterHelper::UseAxe()
+void UGardeningCharacterHelper::UseAxe() const
 {
-	return;
+	UE_LOG(LogTemp, Warning, TEXT("Axe used."));
 }
 
-bool UGardeningCharacterHelper::Trace(FHitResult& Hit)
+bool UGardeningCharacterHelper::Trace(FHitResult& Hit) const
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (!OwnerPawn) { return false; }
+
 	AController* OwnerController = OwnerPawn->GetController();
 	if (!OwnerController) { return false; }
 
@@ -126,36 +140,11 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit)
 	Params.AddIgnoredActor(GetOwner());
 
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
-	                                            ECollisionChannel::ECC_GameTraceChannel1,
-	                                            Params);
+                                                ECollisionChannel::ECC_GameTraceChannel1,
+                                                Params);
 }
 
-void UGardeningCharacterHelper::SwitchTool(const int32 NewToolIndex)
-{
-	if (NewToolIndex == ActiveTool) { return; }
-	StopUsingTool();
-
-	if (NewToolIndex == -1) // Go to next item
-	{
-		ActiveTool = (ActiveTool + 1) % Tools.Num();
-	}
-	else // Go to selected item
-	{
-		ActiveTool = NewToolIndex;
-	}
-}
-
-int32 UGardeningCharacterHelper::GetMaxSeeds()
+int32 UGardeningCharacterHelper::GetMaxSeeds() const
 {
 	return MaxSeeds;
-}
-
-int32 UGardeningCharacterHelper::GetSeedCount()
-{
-	return SeedCount;
-}
-
-void UGardeningCharacterHelper::SetSeedCount(int32 NewSeedCount)
-{
-	SeedCount = NewSeedCount;
 }
