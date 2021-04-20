@@ -94,7 +94,6 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	InputComponent->BindAction<FCustomInputDelegate>("Tool3", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 2);
 }
 
-
 void AGardeningCharacter::OnResetVR()
 {
 	// If Gardening is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in Gardening.Build.cs is not automatically propagated
