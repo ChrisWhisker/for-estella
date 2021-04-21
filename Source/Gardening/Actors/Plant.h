@@ -63,7 +63,7 @@ protected:
 	UPROPERTY(Category="Growth", EditDefaultsOnly)
 	UCurveFloat* GrowthCurve;
 
-	UPROPERTY(Category="Growth", EditDefaultsOnly)
+	UPROPERTY(Category="Growth", EditDefaultsOnly, meta = (AllowPreserveRatio))
 	FVector MaxScale = FVector(1, 1, 2);
 
 	UPROPERTY()

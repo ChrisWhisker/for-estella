@@ -25,15 +25,6 @@ ASeedPickup::ASeedPickup()
 void ASeedPickup::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ACharacter* GenericCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AGardeningCharacter* GardeningCharacter = Cast<AGardeningCharacter>(GenericCharacter);
-	if (!GardeningCharacter)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Can't get the GardeningCharacter in SeedPickup"));
-		return;
-	}
-	Helper = GardeningCharacter->Helper;
 }
 
 void ASeedPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -45,20 +36,60 @@ void ASeedPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 	AGardeningCharacter* GardeningCharacter = Cast<AGardeningCharacter>(OtherActor);
 	if (!GardeningCharacter) { return; }
 
-	const int32 SeedsToAdd = FMath::Min(3, Helper->GetMaxSeeds() - Helper->SeedCount);
-	Helper->SeedCount += SeedsToAdd;
+	GiveSeeds(GardeningCharacter, SeedsPerPickup);
+}
 
-	if (SeedsToAdd > 0)
+int32 ASeedPickup::GiveSeeds(AGardeningCharacter* Character, int32 SeedsToGive)
+{
+	UActorComponent* HelperComponent = Character->GetComponentByClass(UGardeningCharacterHelper::StaticClass());
+	if (!HelperComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Can't find GardeningCharacterHelper"));
+		return 0;
+	}
+
+	UGardeningCharacterHelper* Helper = Cast<UGardeningCharacterHelper>(HelperComponent);
+	if (!Helper)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Can't cast GardeningCharacterHelper"));
+		return 0;
+	}
+
+	SeedsToGive = FMath::Min(SeedsToGive, Helper->GetMaxSeeds() - Helper->SeedCount);
+	Helper->SeedCount += SeedsToGive;
+
+	if (SeedsToGive > 0)
 	{
 		bIsActive = false;
 		LeavesMesh->SetHiddenInGame(true);
-		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Rustle, GetActorLocation());
 		GetWorldTimerManager().SetTimer(ResetTimer, this, &ASeedPickup::ResetPickup, ResetDelay);
 	}
+	return SeedsToGive;
 }
 
 void ASeedPickup::ResetPickup()
 {
-	bIsActive = true;
-	LeavesMesh->SetHiddenInGame(false);
+	TArray<AActor*> CharactersInTrigger;
+	Trigger->GetOverlappingActors(OUT CharactersInTrigger, TSubclassOf<AGardeningCharacter>());
+	int32 TotalSeedsGiven = 0;
+
+	// Divide seeds between all characters in trigger
+	if (CharactersInTrigger.Num() > 0)
+	{
+		const int32 SeedsToGive = FMath::Floor(SeedsPerPickup / CharactersInTrigger.Num());
+
+		for (AActor* OverlappingActor : CharactersInTrigger)
+		{
+			AGardeningCharacter* GardeningCharacter = Cast<AGardeningCharacter>(OverlappingActor);
+			if (!GardeningCharacter) { continue; }
+			TotalSeedsGiven += GiveSeeds(GardeningCharacter, SeedsToGive);
+		}
+	}
+
+	if (TotalSeedsGiven == 0)
+	{
+		bIsActive = true;
+		LeavesMesh->SetHiddenInGame(false);
+	}
 }

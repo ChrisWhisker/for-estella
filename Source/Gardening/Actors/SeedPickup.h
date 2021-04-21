@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SeedPickup.generated.h"
 
+class AGardeningCharacter;
 class UCapsuleComponent;
 
 UCLASS()
@@ -27,6 +28,8 @@ protected:
 
 	void ResetPickup();
 
+	int32 GiveSeeds(AGardeningCharacter* Character, int32 SeedsToGive);
+
 	////////// PROPERTIES //////////
 	UPROPERTY()
 	USceneComponent* Root;
@@ -40,16 +43,16 @@ protected:
 	UPROPERTY()
 	UCapsuleComponent* Trigger;
 
-	UPROPERTY()
-	class UGardeningCharacterHelper* Helper;
-
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	USoundBase* Rustle;
 
-	FTimerHandle ResetTimer;
+	UPROPERTY(Category = "Pickup", EditDefaultsOnly)
+	int32 SeedsPerPickup = 3;
 
-	UPROPERTY(Category = "Activation", EditDefaultsOnly)
+	UPROPERTY(Category = "Pickup", EditDefaultsOnly)
 	float ResetDelay = 5.f;
+
+	FTimerHandle ResetTimer;
 
 	bool bIsActive = true;
 };
