@@ -25,8 +25,6 @@ public:
 
 	void StopGrowing();
 
-	void SetProgressBarVisibility(bool bSetVisible) const;
-
 	////////// PROPERTIES //////////
 	UPROPERTY(BlueprintReadOnly)
 	float GrowthProgress = 0.f;
@@ -74,4 +72,6 @@ protected:
 	FTimeline GrowthTimeline;
 
 	FVector StartScale;
+
+	bool bGrowingSoundPlayed = false;
 };

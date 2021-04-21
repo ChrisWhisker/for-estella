@@ -88,7 +88,6 @@ void UGardeningCharacterHelper::StopUsingTool()
 {
 	if (WateredPlant)
 	{
-		WateredPlant->SetProgressBarVisibility(false);
 		WateredPlant->StopGrowing();
 		WateredPlant = nullptr;
 	}
@@ -114,7 +113,6 @@ void UGardeningCharacterHelper::WaterPlant(const FHitResult Hit)
 	APlant* HitPlant = Cast<APlant>(Hit.GetActor());
 	if (HitPlant)
 	{
-		HitPlant->SetProgressBarVisibility(true);
 		HitPlant->StartGrowing();
 		WateredPlant = HitPlant;
 	}

@@ -67,11 +67,16 @@ void APlant::Tick(float DeltaTime)
 
 void APlant::StartGrowing()
 {
-	GrowthTimeline.Play();
+	if (GrowthProgress / GrowthTimelineLength < 1.f)
+	{
+		ProgressBarWidget->SetVisibility(true);
+		GrowthTimeline.Play();
+	}
 }
 
 void APlant::StopGrowing()
 {
+	ProgressBarWidget->SetVisibility(false);
 	GrowthTimeline.Stop();
 }
 
@@ -80,22 +85,22 @@ void APlant::TimelineProgress(float Value)
 	const FVector NewMeshScale = FMath::Lerp(StartScale, MaxScale, Value);
 	Mesh->SetRelativeScale3D(NewMeshScale);
 	GrowthProgress = GrowthTimeline.GetPlaybackPosition();
+
+	const float GrowthPercent = GrowthProgress / GrowthTimelineLength;
+
+	if (GrowthPercent > 0.9f && !bGrowingSoundPlayed)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
+		bGrowingSoundPlayed = true;
+	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                             int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (GrowthTimeline.GetPlaybackPosition() >= GrowthTimeline.GetTimelineLength() * 0.4)
+	if (GrowthTimeline.GetPlaybackPosition() >= GrowthTimeline.GetTimelineLength() * 0.4f)
 	{
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
-	}
-}
-
-void APlant::SetProgressBarVisibility(bool bSetVisible) const
-{
-	if (ProgressBarWidget)
-	{
-		ProgressBarWidget->SetVisibility(bSetVisible);
 	}
 }
