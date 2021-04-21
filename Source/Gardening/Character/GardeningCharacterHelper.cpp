@@ -23,6 +23,7 @@ void UGardeningCharacterHelper::BeginPlay()
 	if (!GardeningPlayerController)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Player controller isn't found on the character helper."));
+		return;
 	}
 }
 
@@ -50,13 +51,13 @@ void UGardeningCharacterHelper::SwitchTool(const int32 NewToolIndex)
 	StopUsingTool();
 
 	if (NewToolIndex == -1) // Go to next item
-		{
+	{
 		ActiveTool = (ActiveTool + 1) % Tools.Num();
-		}
+	}
 	else // Go to selected item
-		{
+	{
 		ActiveTool = NewToolIndex;
-		}
+	}
 }
 
 void UGardeningCharacterHelper::UseTool()
@@ -140,8 +141,8 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit) const
 	Params.AddIgnoredActor(GetOwner());
 
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
-                                                ECollisionChannel::ECC_GameTraceChannel1,
-                                                Params);
+	                                            ECollisionChannel::ECC_GameTraceChannel1,
+	                                            Params);
 }
 
 int32 UGardeningCharacterHelper::GetMaxSeeds() const

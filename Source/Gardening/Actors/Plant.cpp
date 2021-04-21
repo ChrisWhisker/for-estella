@@ -24,7 +24,11 @@ void APlant::BeginPlay()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlantingSound, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PlantingParticle, GetActorLocation());
 
-	if (!GrowthCurve) { UE_LOG(LogTemp, Error, TEXT("GrowthCurve is not set on Plant.cpp")); }
+	if (!GrowthCurve)
+	{
+		UE_LOG(LogTemp, Error, TEXT("GrowthCurve is not set on Plant.cpp"));
+		return;
+	}
 
 	FOnTimelineFloat TimelineProgress;
 	TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
@@ -35,10 +39,18 @@ void APlant::BeginPlay()
 	GrowthTimelineLength = GrowthTimeline.GetTimelineLength();
 
 	UActorComponent* ProgressBar = this->GetComponentByClass(UWidgetComponent::StaticClass());
-	if (!ProgressBar) { UE_LOG(LogTemp, Error, TEXT("ProgressBar is not found")); }
+	if (!ProgressBar)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ProgressBar is not found"));
+		return;
+	}
 
 	ProgressBarWidget = Cast<UWidgetComponent>(ProgressBar);
-	if (!ProgressBarWidget) { UE_LOG(LogTemp, Error, TEXT("Couldn't cast ProgressBar component")); }
+	if (!ProgressBarWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Couldn't cast ProgressBar component"));
+		return;
+	}
 
 	ProgressBarWidget->SetVisibility(false);
 }

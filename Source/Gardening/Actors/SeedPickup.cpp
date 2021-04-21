@@ -28,7 +28,11 @@ void ASeedPickup::BeginPlay()
 
 	ACharacter* GenericCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AGardeningCharacter* GardeningCharacter = Cast<AGardeningCharacter>(GenericCharacter);
-	if (!GardeningCharacter) { UE_LOG(LogTemp, Error, TEXT("Can't get the GardeningCharacter in SeedPickup")); }
+	if (!GardeningCharacter)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Can't get the GardeningCharacter in SeedPickup"));
+		return;
+	}
 	Helper = GardeningCharacter->Helper;
 }
 
