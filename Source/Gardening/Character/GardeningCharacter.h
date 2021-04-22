@@ -62,9 +62,9 @@ protected:
 
 	/** Called to use the active item (plant seedling, water, attack, etc.) */
 	void FirePressed();
-	
+
 	void PourWaterPressed();
-	
+
 	void PourWaterReleased();
 
 	void SwitchTool();
@@ -86,4 +86,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	UBoxComponent* WateringTrigger;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	USceneComponent* WaterSpawnPoint;
 };

@@ -55,6 +55,10 @@ AGardeningCharacter::AGardeningCharacter()
 	WateringTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Watering Trigger"));
 	WateringTrigger->SetupAttachment(GetMesh());
 	Helper->WateringTrigger = WateringTrigger;
+
+	WaterSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Water Spawn Point"));
+	WaterSpawnPoint->SetupAttachment(WateringTrigger);
+	Helper->WaterSpawnPoint = WaterSpawnPoint;
 }
 
 //////////////////////////////////////////////////////////////////////////

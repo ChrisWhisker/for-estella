@@ -8,11 +8,11 @@
 #include "Gardening/Actors/Plant.h"
 #include "Gardening/GardeningPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
 	SeedCount = MaxSeeds;
 }
 
@@ -25,6 +25,16 @@ void UGardeningCharacterHelper::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Player controller isn't found on the character helper."));
 		return;
+	}
+
+	if (!WateringSound)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Watering sound not set on Character Helper"));
+	}
+
+	if (!WateringParticle)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Watering particle not set on Character Helper"));
 	}
 }
 
@@ -82,6 +92,7 @@ void UGardeningCharacterHelper::StartWatering()
 		WaterPlant(Plant);
 	}
 	WateringSoundComponent = UGameplayStatics::SpawnSoundAttached(WateringSound, WateringTrigger);
+	WateringParticleComponent = UGameplayStatics::SpawnEmitterAttached(WateringParticle, WaterSpawnPoint);
 }
 
 void UGardeningCharacterHelper::StopWatering()
@@ -96,6 +107,11 @@ void UGardeningCharacterHelper::StopWatering()
 	if (WateringSoundComponent)
 	{
 		WateringSoundComponent->StopDelayed(0.5f);
+	}
+
+	if (WateringParticleComponent)
+	{
+		WateringParticleComponent->Deactivate();
 	}
 }
 

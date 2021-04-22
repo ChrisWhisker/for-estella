@@ -50,6 +50,9 @@ public:
 	UPROPERTY()
 	UBoxComponent* WateringTrigger;
 
+	UPROPERTY()
+	USceneComponent* WaterSpawnPoint;
+
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
@@ -64,8 +67,14 @@ protected:
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	USoundBase* WateringSound;
 
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	UPROPERTY(Category = "Effects", VisibleDefaultsOnly)
 	UAudioComponent* WateringSoundComponent;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	UParticleSystem* WateringParticle;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly) // VisibleDefaultsOnly
+	UParticleSystemComponent* WateringParticleComponent;
 
 	UPROPERTY(Category = "References", EditDefaultsOnly)
 	TSubclassOf<class APlant> PlantBpClass;
