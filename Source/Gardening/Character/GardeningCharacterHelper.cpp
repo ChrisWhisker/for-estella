@@ -3,10 +3,11 @@
 
 #include "GardeningCharacterHelper.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/AudioComponent.h"
+#include "Components/BoxComponent.h"
 #include "Gardening/Actors/Plant.h"
 #include "Gardening/GardeningPlayerController.h"
 #include "Kismet/GameplayStatics.h"
-// #include "DrawDebugHelpers.h"
 
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
@@ -52,16 +53,6 @@ void UGardeningCharacterHelper::UseTool()
 	}
 }
 
-void UGardeningCharacterHelper::StopWatering()
-{
-	for (APlant* WateredPlant : WateredPlants)
-	{
-		WateredPlant->StopGrowing();
-	}
-
-	WateredPlants.Empty();
-}
-
 void UGardeningCharacterHelper::PlantSeed(const FHitResult Hit)
 {
 	if (!Hit.GetActor()->GetClass()->GetName().Contains(TEXT("Landscape"))) { return; }
@@ -74,6 +65,37 @@ void UGardeningCharacterHelper::PlantSeed(const FHitResult Hit)
 	if (SpawnedPlant)
 	{
 		SeedCount--;
+	}
+}
+
+void UGardeningCharacterHelper::StartWatering()
+{
+	TArray<AActor*> PlantsInTrigger;
+
+	WateringTrigger->GetOverlappingActors(PlantsInTrigger, TSubclassOf<APlant>());
+
+	for (AActor* PlantActor : PlantsInTrigger)
+	{
+		APlant* Plant = Cast<APlant>(PlantActor);
+		if (!Plant) { continue; }
+
+		WaterPlant(Plant);
+	}
+	WateringSoundComponent = UGameplayStatics::SpawnSoundAttached(WateringSound, WateringTrigger);
+}
+
+void UGardeningCharacterHelper::StopWatering()
+{
+	for (APlant* WateredPlant : WateredPlants)
+	{
+		WateredPlant->StopGrowing();
+	}
+
+	WateredPlants.Empty();
+
+	if (WateringSoundComponent)
+	{
+		WateringSoundComponent->StopDelayed(0.5f);
 	}
 }
 

@@ -81,7 +81,7 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	class UGardeningCharacterHelper* Helper;
 
 	UPROPERTY(EditDefaultsOnly)

@@ -51,9 +51,10 @@ AGardeningCharacter::AGardeningCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	Helper = CreateDefaultSubobject<UGardeningCharacterHelper>(TEXT("Helper"));
-	
+
 	WateringTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Watering Trigger"));
 	WateringTrigger->SetupAttachment(GetMesh());
+	Helper->WateringTrigger = WateringTrigger;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -161,17 +162,7 @@ void AGardeningCharacter::FirePressed()
 void AGardeningCharacter::PourWaterPressed()
 {
 	bIsPourWaterHeld = true;
-
-	TArray<AActor*> PlantsInTrigger;
-	WateringTrigger->GetOverlappingActors(PlantsInTrigger, TSubclassOf<APlant>());
-
-	for (AActor* PlantActor : PlantsInTrigger)
-	{
-		APlant* Plant = Cast<APlant>(PlantActor);
-		if (!Plant) { continue; }
-
-		Helper->WaterPlant(Plant);
-	}
+	Helper->StartWatering();
 }
 
 void AGardeningCharacter::PourWaterReleased()

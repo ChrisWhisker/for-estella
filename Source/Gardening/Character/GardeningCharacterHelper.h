@@ -7,6 +7,7 @@
 
 class AGardeningPlayerController;
 class APlant;
+class UBoxComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class GARDENING_API UGardeningCharacterHelper : public UActorComponent
@@ -21,9 +22,11 @@ public:
 
 	void UseTool();
 
-	void WaterPlant(APlant* PlantToWater);
+	void StartWatering();
 
 	void StopWatering();
+
+	void WaterPlant(APlant* PlantToWater);
 
 	UFUNCTION(BlueprintGetter)
 	int32 GetMaxSeeds() const;
@@ -44,6 +47,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 SeedCount;
 
+	UPROPERTY()
+	UBoxComponent* WateringTrigger;
+
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
@@ -55,6 +61,12 @@ protected:
 	bool Trace(FHitResult& Hit) const;
 
 	////////// PROPERTIES //////////
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	USoundBase* WateringSound;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	UAudioComponent* WateringSoundComponent;
+
 	UPROPERTY(Category = "References", EditDefaultsOnly)
 	TSubclassOf<class APlant> PlantBpClass;
 
