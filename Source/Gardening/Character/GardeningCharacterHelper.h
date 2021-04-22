@@ -6,6 +6,7 @@
 #include "GardeningCharacterHelper.generated.h"
 
 class AGardeningPlayerController;
+class APlant;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class GARDENING_API UGardeningCharacterHelper : public UActorComponent
@@ -16,14 +17,13 @@ public:
 	////////// FUNCTIONS //////////
 	UGardeningCharacterHelper();
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
-
-	void SwitchTool(int32 NewToolIndex);
+	void SwitchTool();
 
 	void UseTool();
 
-	void StopUsingTool();
+	void WaterPlant(APlant* PlantToWater);
+
+	void StopWatering();
 
 	UFUNCTION(BlueprintGetter)
 	int32 GetMaxSeeds() const;
@@ -36,12 +36,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FString Tool_Seeds = TEXT("Seeds");
 	UPROPERTY(BlueprintReadOnly)
-	FString Tool_WateringCan = TEXT("Watering Can");
-	UPROPERTY(BlueprintReadOnly)
 	FString Tool_Axe = TEXT("Axe");
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FString> Tools = {Tool_Seeds, Tool_WateringCan, Tool_Axe};
+	TArray<FString> Tools = {Tool_Seeds, Tool_Axe};
 
 	UPROPERTY(BlueprintReadWrite)
 	int32 SeedCount;
@@ -51,8 +49,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	void PlantSeed(FHitResult Hit);
-
-	void WaterPlant(FHitResult Hit);
 
 	void UseAxe() const;
 
@@ -66,7 +62,7 @@ protected:
 	AGardeningPlayerController* GardeningPlayerController;
 
 	UPROPERTY(BlueprintReadOnly)
-	APlant* WateredPlant;
+	TArray<APlant*> WateredPlants;
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 MaxSeeds = 10;

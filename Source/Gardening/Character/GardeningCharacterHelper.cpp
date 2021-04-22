@@ -10,7 +10,7 @@
 
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	SeedCount = MaxSeeds;
 }
@@ -27,37 +27,9 @@ void UGardeningCharacterHelper::BeginPlay()
 	}
 }
 
-void UGardeningCharacterHelper::TickComponent(float DeltaTime, ELevelTick TickType,
-                                              FActorComponentTickFunction* ThisTickFunction)
+void UGardeningCharacterHelper::SwitchTool()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (WateredPlant)
-	{
-		FHitResult Hit;
-		const bool bTraceSucceeded = Trace(OUT Hit);
-		if (!bTraceSucceeded) { return; }
-
-		if (!Cast<APlant>(Hit.GetActor()))
-		{
-			StopUsingTool();
-		}
-	}
-}
-
-void UGardeningCharacterHelper::SwitchTool(const int32 NewToolIndex)
-{
-	if (NewToolIndex == ActiveTool) { return; }
-	StopUsingTool();
-
-	if (NewToolIndex == -1) // Go to next item
-	{
-		ActiveTool = (ActiveTool + 1) % Tools.Num();
-	}
-	else // Go to selected item
-	{
-		ActiveTool = NewToolIndex;
-	}
+	ActiveTool = (ActiveTool + 1) % Tools.Num();
 }
 
 void UGardeningCharacterHelper::UseTool()
@@ -74,23 +46,20 @@ void UGardeningCharacterHelper::UseTool()
 	{
 		PlantSeed(Hit);
 	}
-	else if (Tools[ActiveTool] == Tool_WateringCan)
-	{
-		WaterPlant(Hit);
-	}
 	else if (Tools[ActiveTool] == Tool_Axe)
 	{
 		UseAxe();
 	}
 }
 
-void UGardeningCharacterHelper::StopUsingTool()
+void UGardeningCharacterHelper::StopWatering()
 {
-	if (WateredPlant)
+	for (APlant* WateredPlant : WateredPlants)
 	{
 		WateredPlant->StopGrowing();
-		WateredPlant = nullptr;
 	}
+
+	WateredPlants.Empty();
 }
 
 void UGardeningCharacterHelper::PlantSeed(const FHitResult Hit)
@@ -108,14 +77,10 @@ void UGardeningCharacterHelper::PlantSeed(const FHitResult Hit)
 	}
 }
 
-void UGardeningCharacterHelper::WaterPlant(const FHitResult Hit)
+void UGardeningCharacterHelper::WaterPlant(APlant* PlantToWater)
 {
-	APlant* HitPlant = Cast<APlant>(Hit.GetActor());
-	if (HitPlant)
-	{
-		HitPlant->StartGrowing();
-		WateredPlant = HitPlant;
-	}
+	PlantToWater->StartGrowing();
+	WateredPlants.Add(PlantToWater);
 }
 
 void UGardeningCharacterHelper::UseAxe() const

@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "GardeningCharacter.generated.h"
 
+class UBoxComponent;
+
 UCLASS(config=Game)
 class AGardeningCharacter : public ACharacter
 {
@@ -60,16 +62,18 @@ protected:
 
 	/** Called to use the active item (plant seedling, water, attack, etc.) */
 	void FirePressed();
-	void FireReleased();
+	
+	void PourWaterPressed();
+	
+	void PourWaterReleased();
 
-	void SwitchTool(int32 ToolNum);
+	void SwitchTool();
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-	UPROPERTY()
-	bool bIsFireHeld = false; // Is the fire button currently held down?
+	bool bIsPourWaterHeld = false; // Is the fire button currently held down?
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -79,4 +83,7 @@ public:
 
 	UPROPERTY()
 	class UGardeningCharacterHelper* Helper;
+
+	UPROPERTY(EditDefaultsOnly)
+	UBoxComponent* WateringTrigger;
 };

@@ -1,14 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GardeningCharacter.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Gardening/Actors/Plant.h"
 #include "Gardening/Character/GardeningCharacterHelper.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AGardeningCharacter
@@ -49,6 +51,9 @@ AGardeningCharacter::AGardeningCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	Helper = CreateDefaultSubobject<UGardeningCharacterHelper>(TEXT("Helper"));
+	
+	WateringTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Watering Trigger"));
+	WateringTrigger->SetupAttachment(GetMesh());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -81,17 +86,9 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// Garden-specific bindings
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::FirePressed);
-	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AGardeningCharacter::FireReleased);
-
-	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
-	InputComponent->BindAction<FCustomInputDelegate>("SwitchTool", IE_Pressed, this, &AGardeningCharacter::SwitchTool,
-	                                                 -1);
-	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
-	InputComponent->BindAction<FCustomInputDelegate>("Tool1", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 0);
-	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
-	InputComponent->BindAction<FCustomInputDelegate>("Tool2", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 1);
-	DECLARE_DELEGATE_OneParam(FCustomInputDelegate, const int32);
-	InputComponent->BindAction<FCustomInputDelegate>("Tool3", IE_Pressed, this, &AGardeningCharacter::SwitchTool, 2);
+	PlayerInputComponent->BindAction("PourWater", IE_Pressed, this, &AGardeningCharacter::PourWaterPressed);
+	PlayerInputComponent->BindAction("PourWater", IE_Released, this, &AGardeningCharacter::PourWaterReleased);
+	PlayerInputComponent->BindAction("SwitchTool", IE_Released, this, &AGardeningCharacter::SwitchTool);
 }
 
 void AGardeningCharacter::OnResetVR()
@@ -158,18 +155,33 @@ void AGardeningCharacter::MoveRight(float Value)
 
 void AGardeningCharacter::FirePressed()
 {
-	bIsFireHeld = true;
 	Helper->UseTool();
 }
 
-void AGardeningCharacter::FireReleased()
+void AGardeningCharacter::PourWaterPressed()
 {
-	bIsFireHeld = false;
-	Helper->StopUsingTool();
+	bIsPourWaterHeld = true;
+
+	TArray<AActor*> PlantsInTrigger;
+	WateringTrigger->GetOverlappingActors(PlantsInTrigger, TSubclassOf<APlant>());
+
+	for (AActor* PlantActor : PlantsInTrigger)
+	{
+		APlant* Plant = Cast<APlant>(PlantActor);
+		if (!Plant) { continue; }
+
+		Helper->WaterPlant(Plant);
+	}
+}
+
+void AGardeningCharacter::PourWaterReleased()
+{
+	bIsPourWaterHeld = false;
+	Helper->StopWatering();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void AGardeningCharacter::SwitchTool(const int32 ToolNum)
+void AGardeningCharacter::SwitchTool()
 {
-	Helper->SwitchTool(ToolNum);
+	Helper->SwitchTool();
 }
