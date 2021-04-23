@@ -13,6 +13,7 @@
 UGardeningCharacterHelper::UGardeningCharacterHelper()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
 	SeedCount = MaxSeeds;
 }
 
@@ -115,10 +116,20 @@ void UGardeningCharacterHelper::StopWatering()
 	}
 }
 
+void UGardeningCharacterHelper::StopWateringOnePlant(APlant* Plant)
+{
+	Plant->StopGrowing();
+	WateredPlants.Remove(Plant);
+}
+
 void UGardeningCharacterHelper::WaterPlant(APlant* PlantToWater)
 {
 	PlantToWater->StartGrowing();
-	WateredPlants.Add(PlantToWater);
+
+	if (!WateredPlants.Contains(PlantToWater))
+	{
+		WateredPlants.Add(PlantToWater);
+	}
 }
 
 void UGardeningCharacterHelper::UseAxe() const

@@ -26,6 +26,8 @@ public:
 
 	void StopWatering();
 
+	void StopWateringOnePlant(APlant* Plant);
+
 	void WaterPlant(APlant* PlantToWater);
 
 	UFUNCTION(BlueprintGetter)

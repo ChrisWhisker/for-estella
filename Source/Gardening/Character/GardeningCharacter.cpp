@@ -59,6 +59,9 @@ AGardeningCharacter::AGardeningCharacter()
 	WaterSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Water Spawn Point"));
 	WaterSpawnPoint->SetupAttachment(WateringTrigger);
 	Helper->WaterSpawnPoint = WaterSpawnPoint;
+
+	WateringTrigger->OnComponentBeginOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapBegin);
+	WateringTrigger->OnComponentEndOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapEnd);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -179,4 +182,24 @@ void AGardeningCharacter::PourWaterReleased()
 void AGardeningCharacter::SwitchTool()
 {
 	Helper->SwitchTool();
+}
+
+void AGardeningCharacter::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+                                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                                const FHitResult& SweepResult)
+{
+	if (!bIsPourWaterHeld) { return; }
+	APlant* Plant = Cast<APlant>(OtherActor);
+	if (!Plant) { return; }
+
+	Helper->WaterPlant(Plant);
+}
+
+void AGardeningCharacter::OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+                                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	APlant* Plant = Cast<APlant>(OtherActor);
+	if (!Plant) { return; }
+
+	Helper->StopWateringOnePlant(Plant);
 }

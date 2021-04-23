@@ -73,7 +73,16 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-	bool bIsPourWaterHeld = false; // Is the fire button currently held down?
+	bool bIsPourWaterHeld = false;
+
+	UFUNCTION()
+	void OnTriggerOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
+	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	                    const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnTriggerOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
+	                  class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	/** Returns CameraBoom subobject **/

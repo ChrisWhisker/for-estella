@@ -48,7 +48,7 @@ protected:
 	UPROPERTY()
 	USceneComponent* Root;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
