@@ -24,6 +24,10 @@ void APlant::BeginPlay()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlantingSound, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PlantingParticle, GetActorLocation());
 
+	float MaxScaleZ = FMath::RandRange(MaxScale.Z - (MaxScale.Z * MaxHeightVariance),
+	                                   MaxScale.Z + (MaxScale.Z * MaxHeightVariance));
+	MaxScale.Z = MaxScaleZ;
+
 	if (!GrowthCurve)
 	{
 		UE_LOG(LogTemp, Error, TEXT("GrowthCurve is not set on Plant.cpp"));

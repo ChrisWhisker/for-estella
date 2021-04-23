@@ -66,6 +66,10 @@ protected:
 	UPROPERTY(Category="Growth", EditDefaultsOnly, meta = (AllowPreserveRatio))
 	FVector MaxScale = FVector(1, 1, 2);
 
+	/* Maximum plant height can vary by this percent of MaxScale.Z */
+	UPROPERTY(Category="Growth", EditDefaultsOnly)
+	float MaxHeightVariance = 0.2f;
+
 	UPROPERTY()
 	UWidgetComponent* ProgressBarWidget;
 
