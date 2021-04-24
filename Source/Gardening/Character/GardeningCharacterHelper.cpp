@@ -92,7 +92,10 @@ void UGardeningCharacterHelper::StartWatering()
 
 		WaterPlant(Plant);
 	}
+
 	WateringSoundComponent = UGameplayStatics::SpawnSoundAttached(WateringSound, WateringTrigger);
+	WateringSoundComponent->Stop();
+	WateringSoundComponent->FadeIn(WaterFadeInTime, 1.f);
 	WateringParticleComponent = UGameplayStatics::SpawnEmitterAttached(WateringParticle, WaterSpawnPoint);
 }
 
@@ -107,7 +110,7 @@ void UGardeningCharacterHelper::StopWatering()
 
 	if (WateringSoundComponent)
 	{
-		WateringSoundComponent->StopDelayed(0.5f);
+		WateringSoundComponent->FadeOut(WaterFadeOutTime, 0.f);
 	}
 
 	if (WateringParticleComponent)

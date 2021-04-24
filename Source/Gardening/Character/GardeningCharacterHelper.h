@@ -69,13 +69,19 @@ protected:
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	USoundBase* WateringSound;
 
-	UPROPERTY(Category = "Effects", VisibleDefaultsOnly)
+	UPROPERTY()
 	UAudioComponent* WateringSoundComponent;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	UParticleSystem* WateringParticle;
 
-	UPROPERTY(Category = "Effects", EditDefaultsOnly) // VisibleDefaultsOnly
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	float WaterFadeInTime = .5f;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	float WaterFadeOutTime = 2.f;
+
+	UPROPERTY()
 	UParticleSystemComponent* WateringParticleComponent;
 
 	UPROPERTY(Category = "References", EditDefaultsOnly)
