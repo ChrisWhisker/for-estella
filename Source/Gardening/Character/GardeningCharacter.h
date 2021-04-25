@@ -13,6 +13,8 @@ class AGardeningCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+private:
+	////////// PROPERTIES //////////
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -22,6 +24,7 @@ class AGardeningCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 
 public:
+	////////// FUNCTIONS //////////
 	AGardeningCharacter();
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -32,7 +35,23 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	////////// PROPERTIES //////////
+	UPROPERTY(EditDefaultsOnly)
+	class UGardeningCharacterHelper* Helper;
+
+	UPROPERTY(EditDefaultsOnly)
+	UBoxComponent* WateringTrigger;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	USceneComponent* WaterSpawnPoint;
+
 protected:
+	////////// FUNCTIONS //////////
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
 
@@ -77,25 +96,10 @@ protected:
 
 	UFUNCTION()
 	void OnTriggerOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
-	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-	                    const FHitResult& SweepResult);
+	                           class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	                           const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OnTriggerOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
-	                  class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-	UPROPERTY(EditDefaultsOnly)
-	class UGardeningCharacterHelper* Helper;
-
-	UPROPERTY(EditDefaultsOnly)
-	UBoxComponent* WateringTrigger;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	USceneComponent* WaterSpawnPoint;
+	                         class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

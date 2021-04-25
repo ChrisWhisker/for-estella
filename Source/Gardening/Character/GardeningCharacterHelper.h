@@ -75,14 +75,14 @@ protected:
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	UParticleSystem* WateringParticle;
 
+	UPROPERTY()
+	UParticleSystemComponent* WateringParticleComponent;
+
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	float WaterFadeInTime = .5f;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	float WaterFadeOutTime = 2.f;
-
-	UPROPERTY()
-	UParticleSystemComponent* WateringParticleComponent;
 
 	UPROPERTY(Category = "References", EditDefaultsOnly)
 	TSubclassOf<class APlant> PlantBpClass;
