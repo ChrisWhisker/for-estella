@@ -40,18 +40,14 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	////////// PROPERTIES //////////
+protected:
+	////////// FUNCTIONS //////////
 	UPROPERTY(EditDefaultsOnly)
 	class UGardeningCharacterHelper* Helper;
 
 	UPROPERTY(EditDefaultsOnly)
 	UBoxComponent* WateringTrigger;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	USceneComponent* WaterSpawnPoint;
-
-protected:
-	////////// FUNCTIONS //////////
+	
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
 
@@ -79,6 +75,10 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	// APawn interface
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// End of APawn interface
+
 	/** Called to use the active item (plant seedling, water, attack, etc.) */
 	void FirePressed();
 
@@ -87,11 +87,7 @@ protected:
 	void PourWaterReleased();
 
 	void SwitchTool();
-
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
-
+	
 	bool bIsPourWaterHeld = false;
 
 	UFUNCTION()
@@ -102,4 +98,23 @@ protected:
 	UFUNCTION()
 	void OnTriggerOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
 	                         class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	////////// PROPERTIES //////////
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	USceneComponent* WaterSpawnPoint;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	USoundBase* WaterSound;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	UParticleSystem* WaterParticle;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	float WaterSoundFadeInSeconds = .5f;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	float WaterSoundFadeOutSeconds = 2.f;
+
+	UPROPERTY(Category = "Raycasting", EditDefaultsOnly)
+	float MaxTraceRange = 500.f;
 };

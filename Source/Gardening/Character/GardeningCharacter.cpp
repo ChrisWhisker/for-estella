@@ -51,17 +51,23 @@ AGardeningCharacter::AGardeningCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	Helper = CreateDefaultSubobject<UGardeningCharacterHelper>(TEXT("Helper"));
-
+	
 	WateringTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Watering Trigger"));
 	WateringTrigger->SetupAttachment(GetMesh());
-	Helper->WateringTrigger = WateringTrigger;
+	WateringTrigger->OnComponentBeginOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapBegin);
+	WateringTrigger->OnComponentEndOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapEnd);
 
 	WaterSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Water Spawn Point"));
 	WaterSpawnPoint->SetupAttachment(WateringTrigger);
-	Helper->WaterSpawnPoint = WaterSpawnPoint;
 
-	WateringTrigger->OnComponentBeginOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapBegin);
-	WateringTrigger->OnComponentEndOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapEnd);
+	// Set helper properties
+	Helper->WateringTrigger = WateringTrigger;
+	Helper->WaterSpawnPoint = WaterSpawnPoint;
+	Helper->WaterSound = WaterSound;
+	Helper->WaterParticle = WaterParticle;
+	Helper->WaterSoundFadeInSeconds = WaterSoundFadeInSeconds;
+	Helper->WaterSoundFadeOutSeconds = WaterSoundFadeOutSeconds;
+	Helper->MaxTraceRange = MaxTraceRange;
 }
 
 //////////////////////////////////////////////////////////////////////////

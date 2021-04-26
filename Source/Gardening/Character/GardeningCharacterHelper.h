@@ -31,7 +31,7 @@ public:
 	void WaterPlant(APlant* PlantToWater);
 
 	UFUNCTION(BlueprintGetter)
-	int32 GetMaxSeeds() const;
+	FORCEINLINE int32 GetMaxSeeds() const { return MaxSeeds; }
 
 	////////// PROPERTIES //////////
 	UPROPERTY(BlueprintReadOnly)
@@ -55,6 +55,21 @@ public:
 	UPROPERTY()
 	USceneComponent* WaterSpawnPoint;
 
+	UPROPERTY()
+	USoundBase* WaterSound;
+
+	UPROPERTY()
+	UParticleSystem* WaterParticle;
+
+	UPROPERTY()
+	float WaterSoundFadeInSeconds;
+
+	UPROPERTY()
+	float WaterSoundFadeOutSeconds;
+
+	UPROPERTY()
+	float MaxTraceRange;
+
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
@@ -66,26 +81,14 @@ protected:
 	bool Trace(FHitResult& Hit) const;
 
 	////////// PROPERTIES //////////
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	USoundBase* WateringSound;
+	UPROPERTY(Category = "References", EditDefaultsOnly)
+	TSubclassOf<class APlant> PlantBlueprintClass;
 
 	UPROPERTY()
-	UAudioComponent* WateringSoundComponent;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	UParticleSystem* WateringParticle;
+	UAudioComponent* WaterSoundComponent;
 
 	UPROPERTY()
 	UParticleSystemComponent* WateringParticleComponent;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	float WaterFadeInTime = .5f;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	float WaterFadeOutTime = 2.f;
-
-	UPROPERTY(Category = "References", EditDefaultsOnly)
-	TSubclassOf<class APlant> PlantBpClass;
 
 	UPROPERTY()
 	AGardeningPlayerController* GardeningPlayerController;
@@ -95,7 +98,4 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 MaxSeeds = 10;
-
-	UPROPERTY(Category = "Raycasting", EditDefaultsOnly)
-	float MaxRange = 500.f;
 };

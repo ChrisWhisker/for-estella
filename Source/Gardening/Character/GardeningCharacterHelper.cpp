@@ -28,12 +28,17 @@ void UGardeningCharacterHelper::BeginPlay()
 		return;
 	}
 
-	if (!WateringSound)
+	if (!PlantBlueprintClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Plant Blueprint Class is not set on the character helper."));
+	}
+
+	if (!WaterSound)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Watering sound not set on Character Helper"));
 	}
 
-	if (!WateringParticle)
+	if (!WaterParticle)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Watering particle not set on Character Helper"));
 	}
@@ -70,7 +75,7 @@ void UGardeningCharacterHelper::PlantSeed(const FHitResult Hit)
 
 	const float PlantYaw = FMath::RandRange(0.f, 360.f);
 	const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
-	AActor* Spawned = GetWorld()->SpawnActor<APlant>(PlantBpClass, Hit.Location, PlantingDirection);
+	AActor* Spawned = GetWorld()->SpawnActor<APlant>(PlantBlueprintClass, Hit.Location, PlantingDirection);
 	APlant* SpawnedPlant = Cast<APlant>(Spawned);
 
 	if (SpawnedPlant)
@@ -93,10 +98,10 @@ void UGardeningCharacterHelper::StartWatering()
 		WaterPlant(Plant);
 	}
 
-	WateringSoundComponent = UGameplayStatics::SpawnSoundAttached(WateringSound, WateringTrigger);
-	WateringSoundComponent->Stop();
-	WateringSoundComponent->FadeIn(WaterFadeInTime, 1.f);
-	WateringParticleComponent = UGameplayStatics::SpawnEmitterAttached(WateringParticle, WaterSpawnPoint);
+	WaterSoundComponent = UGameplayStatics::SpawnSoundAttached(WaterSound, WateringTrigger);
+	WaterSoundComponent->Stop();
+	WaterSoundComponent->FadeIn(WaterSoundFadeInSeconds, 1.f);
+	WateringParticleComponent = UGameplayStatics::SpawnEmitterAttached(WaterParticle, WaterSpawnPoint);
 }
 
 void UGardeningCharacterHelper::StopWatering()
@@ -108,9 +113,9 @@ void UGardeningCharacterHelper::StopWatering()
 
 	WateredPlants.Empty();
 
-	if (WateringSoundComponent)
+	if (WaterSoundComponent)
 	{
-		WateringSoundComponent->FadeOut(WaterFadeOutTime, 0.f);
+		WaterSoundComponent->FadeOut(WaterSoundFadeOutSeconds, 0.f);
 	}
 
 	if (WateringParticleComponent)
@@ -151,16 +156,11 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit) const
 	FVector StartLocation;
 	FRotator Rotation;
 	OwnerController->GetPlayerViewPoint(OUT StartLocation, OUT Rotation);
-	const FVector EndLocation = StartLocation + Rotation.Vector() * MaxRange;
+	const FVector EndLocation = StartLocation + Rotation.Vector() * MaxTraceRange;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
 
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
 	                                            ECollisionChannel::ECC_GameTraceChannel1,
 	                                            Params);
-}
-
-int32 UGardeningCharacterHelper::GetMaxSeeds() const
-{
-	return MaxSeeds;
 }
