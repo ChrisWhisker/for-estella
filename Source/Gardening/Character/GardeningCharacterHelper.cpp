@@ -166,12 +166,12 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit) const
 	                                            Params);
 }
 
-void UGardeningCharacterHelper::AddToGardenHeight(const float Height)
+void UGardeningCharacterHelper::AddFeetToGardenHeight(const float Height)
 {
-	TotalGardenHeight += Height;
+	GardenHeightFeet += Height;
 }
 
-void UGardeningCharacterHelper::SubtractFromGardenHeight(const float Height)
+void UGardeningCharacterHelper::SubtractFeetFromGardenHeight(const float Height)
 {
-	TotalGardenHeight -= Height;
+	GardenHeightFeet -= Height;
 }

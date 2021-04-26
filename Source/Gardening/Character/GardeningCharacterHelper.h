@@ -33,9 +33,9 @@ public:
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE int32 GetMaxSeeds() const { return MaxSeeds; }
 
-    void AddToGardenHeight(float Height);
+    void AddFeetToGardenHeight(float Height);
 
-	void SubtractFromGardenHeight(float Height);
+	void SubtractFeetFromGardenHeight(float Height);
 
 	////////// PROPERTIES //////////
 	UPROPERTY(BlueprintReadOnly)
@@ -98,7 +98,7 @@ protected:
 	AGardeningPlayerController* GardeningPlayerController;
 
 	UPROPERTY(BlueprintReadOnly)
-	float TotalGardenHeight = 0.f;
+	float GardenHeightFeet = 0.f;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<APlant*> WateredPlants;

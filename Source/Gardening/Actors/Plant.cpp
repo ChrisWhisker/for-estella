@@ -58,6 +58,14 @@ void APlant::BeginPlay()
 	}
 
 	ProgressBarWidget->SetVisibility(false);
+
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &APlant::InitialSetupDelayed, 0.05, false);
+}
+
+void APlant::InitialSetupDelayed() const
+{
+	CharacterHelper->AddFeetToGardenHeight(FMath::RandRange(.25f, .5f));
 }
 
 void APlant::Tick(float DeltaTime)
@@ -93,7 +101,8 @@ void APlant::TimelineProgress(float Value)
 	GrowthProgress = GrowthTimeline.GetPlaybackPosition();
 
 	const float GrowthPercent = GrowthProgress / GrowthTimelineLength;
-	CharacterHelper->AddToGardenHeight(NewMeshScale.Z - CurrentHeight);
+	const float FeetToAdd = (NewMeshScale.Z - CurrentHeight) * ScaleToFeetMultiplier;
+	CharacterHelper->AddFeetToGardenHeight(FeetToAdd);
 
 	if (GrowthPercent > 0.9f && !bGrowingSoundPlayed)
 	{

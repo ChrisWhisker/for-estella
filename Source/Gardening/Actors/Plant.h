@@ -40,6 +40,10 @@ protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
 
+	/* This is used to ensure references are valid before performing the dependent setup*/
+	UFUNCTION()
+	void InitialSetupDelayed() const;
+
 	UFUNCTION()
 	void TimelineProgress(float Value);
 
@@ -82,4 +86,6 @@ protected:
 	FVector StartScale;
 
 	bool bGrowingSoundPlayed = false;
+
+	const float ScaleToFeetMultiplier = 5.16f;
 };
