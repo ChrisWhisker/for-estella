@@ -10,6 +10,11 @@ public class Gardening : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "UMG" });
 		MinFilesUsingPrecompiledHeaderOverride = 1;
-		bFasterWithoutUnity = true;
+		
+		// Added lines below
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        // PrivatePCHHeaderFile = "MaulProtoPrecompiled.h";
+        MinFilesUsingPrecompiledHeaderOverride = 1;
+        bUseUnity = false;
 	}
 }
