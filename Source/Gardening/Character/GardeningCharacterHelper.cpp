@@ -80,6 +80,7 @@ void UGardeningCharacterHelper::PlantSeed(const FHitResult Hit)
 
 	if (SpawnedPlant)
 	{
+		SpawnedPlant->CharacterHelper = this;
 		SeedCount--;
 	}
 }
@@ -163,4 +164,14 @@ bool UGardeningCharacterHelper::Trace(FHitResult& Hit) const
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
 	                                            ECollisionChannel::ECC_GameTraceChannel1,
 	                                            Params);
+}
+
+void UGardeningCharacterHelper::AddToGardenHeight(const float Height)
+{
+	TotalGardenHeight += Height;
+}
+
+void UGardeningCharacterHelper::SubtractFromGardenHeight(const float Height)
+{
+	TotalGardenHeight -= Height;
 }

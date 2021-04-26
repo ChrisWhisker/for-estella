@@ -105,6 +105,7 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("SwitchTool", IE_Released, this, &AGardeningCharacter::SwitchTool);
 }
 
+// ReSharper disable once CppMemberFunctionMayBeStatic
 void AGardeningCharacter::OnResetVR()
 {
 	// If Gardening is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in Gardening.Build.cs is not automatically propagated
@@ -190,6 +191,7 @@ void AGardeningCharacter::SwitchTool()
 	Helper->SwitchTool();
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void AGardeningCharacter::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                                 const FHitResult& SweepResult)
@@ -201,6 +203,8 @@ void AGardeningCharacter::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedC
 	Helper->WaterPlant(Plant);
 }
 
+
+// ReSharper disable once CppMemberFunctionMayBeConst
 void AGardeningCharacter::OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {

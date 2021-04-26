@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Gardening/Character/GardeningCharacterHelper.h"
 #include "Kismet/GameplayStatics.h"
 
 APlant::APlant()
@@ -24,8 +25,8 @@ void APlant::BeginPlay()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlantingSound, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PlantingParticle, GetActorLocation());
 
-	float MaxScaleZ = FMath::RandRange(MaxScale.Z - (MaxScale.Z * MaxHeightVariance),
-	                                   MaxScale.Z + (MaxScale.Z * MaxHeightVariance));
+	const float MaxScaleZ = FMath::RandRange(MaxScale.Z - (MaxScale.Z * MaxHeightVariance),
+	                                         MaxScale.Z + (MaxScale.Z * MaxHeightVariance));
 	MaxScale.Z = MaxScaleZ;
 
 	if (!GrowthCurve)
@@ -86,15 +87,17 @@ void APlant::StopGrowing()
 
 void APlant::TimelineProgress(float Value)
 {
+	const float CurrentHeight = Mesh->GetComponentScale().Z;
 	const FVector NewMeshScale = FMath::Lerp(StartScale, MaxScale, Value);
 	Mesh->SetRelativeScale3D(NewMeshScale);
 	GrowthProgress = GrowthTimeline.GetPlaybackPosition();
 
 	const float GrowthPercent = GrowthProgress / GrowthTimelineLength;
+	CharacterHelper->AddToGardenHeight(NewMeshScale.Z - CurrentHeight);
 
 	if (GrowthPercent > 0.9f && !bGrowingSoundPlayed)
 	{
-		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), RustleSound, GetActorLocation());
 		bGrowingSoundPlayed = true;
 	}
 }
@@ -105,6 +108,6 @@ void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 {
 	if (GrowthTimeline.GetPlaybackPosition() >= GrowthTimeline.GetTimelineLength() * 0.4f)
 	{
-		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Rustle, GetActorLocation());
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), RustleSound, GetActorLocation());
 	}
 }

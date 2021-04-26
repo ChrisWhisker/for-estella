@@ -8,6 +8,7 @@
 #include "Plant.generated.h"
 
 class UCurveFloat;
+class UGardeningCharacterHelper;
 class UWidgetComponent;
 
 UCLASS()
@@ -26,6 +27,9 @@ public:
 	void StopGrowing();
 
 	////////// PROPERTIES //////////
+	UPROPERTY()
+	UGardeningCharacterHelper* CharacterHelper;
+
 	UPROPERTY(BlueprintReadOnly)
 	float GrowthProgress = 0.f;
 
@@ -52,7 +56,7 @@ protected:
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	USoundBase* Rustle;
+	USoundBase* RustleSound;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	USoundBase* PlantingSound;
