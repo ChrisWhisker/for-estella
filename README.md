@@ -13,8 +13,22 @@ As the game is actively being worked on, the play cycle is not complete and impr
 ## Art Credits
 Depending on the individual licenses of each item, some or all assets listed here should be considered temporary placeholder art.
 
+### Animations
+- "Happy Idle" from Female Animation Pack on mixamo.com
+- "Left Strafe" on mixamo.com
+- "Jump" on mixamo.com
+- "Left Strafe Walk" on mixamo.com
+- "Right Strafe Walk" on mixamo.com
+- "Right Strafe" on mixamo.com
+- "Run Backward" on mixamo.com
+- "Running" on mixamo.com
+- "Standing Melee Attack Downward" on mixamo.com
+- "Walking Backwards" on mixamo.com
+- "Walking" on mixamo.com
+
 ### Models
 - Broadleaf Tree 02 by meta.elements on turbosquid.com
+- "Joleen" on mixamo.com
 - SM_Bush from Unreal Engine StarterContent
 
 ### Particle Effects
