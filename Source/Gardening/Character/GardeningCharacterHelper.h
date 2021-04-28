@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "GardeningCharacterHelper.generated.h"
 
+class AAxe;
+class ABucket;
 class AGardeningPlayerController;
 class APlant;
+class ASack;
 class UBoxComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -20,7 +23,9 @@ public:
 
 	void SwitchTool();
 
-	void UseTool();
+	void FirePressed();
+
+	void FireReleased();
 
 	void StartWatering();
 
@@ -38,6 +43,15 @@ public:
 	void SubtractFeetFromGardenHeight(float Height);
 
 	////////// PROPERTIES //////////
+	UPROPERTY()
+	AAxe* Axe;
+
+	UPROPERTY()
+	ABucket* Bucket;
+
+	UPROPERTY()
+	ASack* Sack;
+
 	UPROPERTY(BlueprintReadOnly)
 	int32 ActiveTool = 0;
 
@@ -45,10 +59,12 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FString Tool_Seeds = TEXT("Seeds");
 	UPROPERTY(BlueprintReadOnly)
+	FString Tool_Water = TEXT("Water");
+	UPROPERTY(BlueprintReadOnly)
 	FString Tool_Axe = TEXT("Axe");
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FString> Tools = {Tool_Seeds, Tool_Axe};
+	TArray<FString> Tools = {Tool_Seeds, Tool_Water, Tool_Axe};
 
 	UPROPERTY(BlueprintReadWrite)
 	int32 SeedCount;
@@ -73,6 +89,8 @@ public:
 
 	UPROPERTY()
 	float MaxTraceRange;
+
+	bool bIsPourWaterHeld = false;
 
 protected:
 	////////// FUNCTIONS //////////

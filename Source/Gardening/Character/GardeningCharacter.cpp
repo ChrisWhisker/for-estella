@@ -85,6 +85,7 @@ void AGardeningCharacter::BeginPlay()
 	Axe = GetWorld()->SpawnActor<AAxe>(AxeClass);
 	Axe->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("ToolSocket"));
 	Axe->SetOwner(this);
+	Axe->SetActorHiddenInGame(true);
 
 	if (!BucketClass)
 	{
@@ -94,6 +95,7 @@ void AGardeningCharacter::BeginPlay()
 	Bucket = GetWorld()->SpawnActor<ABucket>(BucketClass);
 	Bucket->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("ToolSocket"));
 	Bucket->SetOwner(this);
+	Bucket->SetActorHiddenInGame(true);
 
 	if (!SackClass)
 	{
@@ -103,6 +105,11 @@ void AGardeningCharacter::BeginPlay()
 	Sack = GetWorld()->SpawnActor<ASack>(SackClass);
 	Sack->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("ToolSocket"));
 	Sack->SetOwner(this);
+
+	// Set helper properties
+	Helper->Axe = Axe;
+	Helper->Bucket = Bucket;
+	Helper->Sack = Sack;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -135,8 +142,7 @@ void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// Garden-specific bindings
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::FirePressed);
-	PlayerInputComponent->BindAction("PourWater", IE_Pressed, this, &AGardeningCharacter::PourWaterPressed);
-	PlayerInputComponent->BindAction("PourWater", IE_Released, this, &AGardeningCharacter::PourWaterReleased);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AGardeningCharacter::FireReleased);
 	PlayerInputComponent->BindAction("SwitchTool", IE_Released, this, &AGardeningCharacter::SwitchTool);
 }
 
@@ -203,21 +209,16 @@ void AGardeningCharacter::MoveRight(float Value)
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void AGardeningCharacter::FirePressed()
 {
-	Helper->UseTool();
+	Helper->FirePressed();
 }
 
-void AGardeningCharacter::PourWaterPressed()
+// ReSharper disable once CppMemberFunctionMayBeConst
+void AGardeningCharacter::FireReleased()
 {
-	bIsPourWaterHeld = true;
-	Helper->StartWatering();
-}
-
-void AGardeningCharacter::PourWaterReleased()
-{
-	bIsPourWaterHeld = false;
-	Helper->StopWatering();
+	Helper->FireReleased();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -231,7 +232,7 @@ void AGardeningCharacter::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedC
                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                                 const FHitResult& SweepResult)
 {
-	if (!bIsPourWaterHeld) { return; }
+	if (!Helper->bIsPourWaterHeld) { return; }
 	APlant* Plant = Cast<APlant>(OtherActor);
 	if (!Plant) { return; }
 

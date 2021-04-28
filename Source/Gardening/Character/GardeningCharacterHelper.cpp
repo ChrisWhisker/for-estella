@@ -5,7 +5,10 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
+#include "Gardening/Actors/Axe.h"
+#include "Gardening/Actors/Bucket.h"
 #include "Gardening/Actors/Plant.h"
+#include "Gardening/Actors/Sack.h"
 #include "Gardening/GardeningPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -24,49 +27,77 @@ void UGardeningCharacterHelper::BeginPlay()
 	GardeningPlayerController = Cast<AGardeningPlayerController>(FirstPlayerController);
 	if (!GardeningPlayerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Player controller isn't found on the character helper."));
+		UE_LOG(LogTemp, Error, TEXT("Player controller isn't found on the character."));
 		return;
 	}
 
 	if (!PlantBlueprintClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Plant Blueprint Class is not set on the character helper."));
+		UE_LOG(LogTemp, Error, TEXT("Plant Blueprint Class is not set on the character."));
 	}
 
 	if (!WaterSound)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Watering sound not set on Character Helper"));
+		UE_LOG(LogTemp, Error, TEXT("Watering sound not set on the character"));
 	}
 
 	if (!WaterParticle)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Watering particle not set on Character Helper"));
+		UE_LOG(LogTemp, Error, TEXT("Watering particle not set on the character"));
 	}
 }
 
 void UGardeningCharacterHelper::SwitchTool()
 {
 	ActiveTool = (ActiveTool + 1) % Tools.Num();
+
+	if (Tools[ActiveTool] == Tool_Seeds)
+	{
+		Sack->SetActorHiddenInGame(false);
+		Bucket->SetActorHiddenInGame(true);
+		Axe->SetActorHiddenInGame(true);
+	}
+	else if (Tools[ActiveTool] == Tool_Water)
+	{
+		Sack->SetActorHiddenInGame(true);
+		Bucket->SetActorHiddenInGame(false);
+		Axe->SetActorHiddenInGame(true);
+	}
+	else if (Tools[ActiveTool] == Tool_Axe)
+	{
+		Sack->SetActorHiddenInGame(true);
+		Bucket->SetActorHiddenInGame(true);
+		Axe->SetActorHiddenInGame(false);
+	}
 }
 
-void UGardeningCharacterHelper::UseTool()
+void UGardeningCharacterHelper::FirePressed()
 {
-	FHitResult Hit;
-	const bool bTraceSucceeded = Trace(Hit);
-
-	if (!bTraceSucceeded) { return; }
-
-	AActor* HitActor = Hit.GetActor();
-	if (!HitActor) { return; }
-
 	if (Tools[ActiveTool] == Tool_Seeds && SeedCount > 0)
 	{
+		FHitResult Hit;
+		const bool bTraceSucceeded = Trace(Hit);
+		if (!bTraceSucceeded) { return; }
+		AActor* HitActor = Hit.GetActor();
+		if (!HitActor) { return; }
 		PlantSeed(Hit);
+	}
+	else if (Tools[ActiveTool] == Tool_Water)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Watering"));
+		bIsPourWaterHeld = true;
+		StartWatering();
 	}
 	else if (Tools[ActiveTool] == Tool_Axe)
 	{
 		UseAxe();
 	}
+}
+
+void UGardeningCharacterHelper::FireReleased()
+{
+	bIsPourWaterHeld = false;
+	StopWatering();
 }
 
 void UGardeningCharacterHelper::PlantSeed(const FHitResult Hit)

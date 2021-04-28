@@ -77,13 +77,9 @@ protected:
 	/** Called to use the active item (plant seedling, water, attack, etc.) */
 	void FirePressed();
 
-	void PourWaterPressed();
-
-	void PourWaterReleased();
+	void FireReleased();
 
 	void SwitchTool();
-
-	bool bIsPourWaterHeld = false;
 
 	UFUNCTION()
 	void OnTriggerOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
