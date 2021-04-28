@@ -42,12 +42,7 @@ public:
 
 protected:
 	////////// FUNCTIONS //////////
-	UPROPERTY(EditDefaultsOnly)
-	class UGardeningCharacterHelper* Helper;
-
-	UPROPERTY(EditDefaultsOnly)
-	UBoxComponent* WateringTrigger;
-	
+	virtual void BeginPlay() override;
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
 
@@ -87,7 +82,7 @@ protected:
 	void PourWaterReleased();
 
 	void SwitchTool();
-	
+
 	bool bIsPourWaterHeld = false;
 
 	UFUNCTION()
@@ -100,6 +95,12 @@ protected:
 	                         class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	////////// PROPERTIES //////////
+	UPROPERTY(EditDefaultsOnly)
+	class UGardeningCharacterHelper* Helper;
+
+	UPROPERTY(EditDefaultsOnly)
+	UBoxComponent* WateringTrigger;
+
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	USceneComponent* WaterSpawnPoint;
 
@@ -117,4 +118,22 @@ protected:
 
 	UPROPERTY(Category = "Raycasting", EditDefaultsOnly)
 	float MaxTraceRange = 500.f;
+
+	UPROPERTY(Category = "References", EditDefaultsOnly)
+	TSubclassOf<class AAxe> AxeClass;
+
+	UPROPERTY()
+	AAxe* Axe;
+
+	UPROPERTY(Category = "References", EditDefaultsOnly)
+	TSubclassOf<class ABucket> BucketClass;
+
+	UPROPERTY()
+	ABucket* Bucket;
+
+	UPROPERTY(Category = "References", EditDefaultsOnly)
+	TSubclassOf<class ASack> SackClass;
+
+	UPROPERTY()
+	ASack* Sack;
 };

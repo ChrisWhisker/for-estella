@@ -11,6 +11,7 @@
 APlant::APlant()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -80,9 +81,9 @@ void APlant::Tick(float DeltaTime)
 
 void APlant::StartGrowing()
 {
+	ProgressBarWidget->SetVisibility(true);
 	if (GrowthProgress / GrowthTimelineLength < 1.f)
 	{
-		ProgressBarWidget->SetVisibility(true);
 		GrowthTimeline.Play();
 	}
 }

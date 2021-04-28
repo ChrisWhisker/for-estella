@@ -8,7 +8,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Gardening/Actors/Axe.h"
+#include "Gardening/Actors/Bucket.h"
 #include "Gardening/Actors/Plant.h"
+#include "Gardening/Actors/Sack.h"
 #include "Gardening/Character/GardeningCharacterHelper.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 
@@ -51,7 +54,7 @@ AGardeningCharacter::AGardeningCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	Helper = CreateDefaultSubobject<UGardeningCharacterHelper>(TEXT("Helper"));
-	
+
 	WateringTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Watering Trigger"));
 	WateringTrigger->SetupAttachment(GetMesh());
 	WateringTrigger->OnComponentBeginOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapBegin);
@@ -68,6 +71,38 @@ AGardeningCharacter::AGardeningCharacter()
 	Helper->WaterSoundFadeInSeconds = WaterSoundFadeInSeconds;
 	Helper->WaterSoundFadeOutSeconds = WaterSoundFadeOutSeconds;
 	Helper->MaxTraceRange = MaxTraceRange;
+}
+
+void AGardeningCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!AxeClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Axe class is missing on the Gardening Character"));
+		return;
+	}
+	Axe = GetWorld()->SpawnActor<AAxe>(AxeClass);
+	Axe->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("ToolSocket"));
+	Axe->SetOwner(this);
+
+	if (!BucketClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Bucket class is missing on the Gardening Character"));
+		return;
+	}
+	Bucket = GetWorld()->SpawnActor<ABucket>(BucketClass);
+	Bucket->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("ToolSocket"));
+	Bucket->SetOwner(this);
+
+	if (!SackClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Sack class is missing on the Gardening Character"));
+		return;
+	}
+	Sack = GetWorld()->SpawnActor<ASack>(SackClass);
+	Sack->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("ToolSocket"));
+	Sack->SetOwner(this);
 }
 
 //////////////////////////////////////////////////////////////////////////
