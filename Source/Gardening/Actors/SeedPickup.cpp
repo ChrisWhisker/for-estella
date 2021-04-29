@@ -4,7 +4,6 @@
 #include "SeedPickup.h"
 #include "Components/CapsuleComponent.h"
 #include "Gardening/Character/GardeningCharacter.h"
-#include "Gardening/Character/GardeningCharacterHelper.h"
 #include "Kismet/GameplayStatics.h"
 
 ASeedPickup::ASeedPickup()
@@ -41,22 +40,8 @@ void ASeedPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 
 int32 ASeedPickup::GiveSeeds(AGardeningCharacter* Character, int32 SeedsToGive)
 {
-	UActorComponent* HelperComponent = Character->GetComponentByClass(UGardeningCharacterHelper::StaticClass());
-	if (!HelperComponent)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Can't find GardeningCharacterHelper"));
-		return 0;
-	}
-
-	UGardeningCharacterHelper* Helper = Cast<UGardeningCharacterHelper>(HelperComponent);
-	if (!Helper)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Can't cast GardeningCharacterHelper"));
-		return 0;
-	}
-
-	SeedsToGive = FMath::Min(SeedsToGive, Helper->GetMaxSeeds() - Helper->SeedCount);
-	Helper->SeedCount += SeedsToGive;
+	SeedsToGive = FMath::Min(SeedsToGive, Character->GetMaxSeeds() - Character->SeedCount);
+	Character->SeedCount += SeedsToGive;
 
 	if (SeedsToGive > 0)
 	{

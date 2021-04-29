@@ -5,7 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Gardening/Character/GardeningCharacterHelper.h"
+#include "Gardening/Character/GardeningCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 APlant::APlant()
@@ -66,7 +66,8 @@ void APlant::BeginPlay()
 
 void APlant::InitialSetupDelayed() const
 {
-	CharacterHelper->AddFeetToGardenHeight(FMath::RandRange(.25f, .5f));
+	const float FeetToAdd = FMath::RandRange(.25f, .5f);
+	Character->SetGardenHeightFeet(Character->GetGardenHeightFeet() + FeetToAdd);
 }
 
 void APlant::Tick(float DeltaTime)
@@ -103,7 +104,7 @@ void APlant::TimelineProgress(float Value)
 
 	const float GrowthPercent = GrowthProgress / GrowthTimelineLength;
 	const float FeetToAdd = (NewMeshScale.Z - CurrentHeight) * ScaleToFeetMultiplier;
-	CharacterHelper->AddFeetToGardenHeight(FeetToAdd);
+	Character->SetGardenHeightFeet(Character->GetGardenHeightFeet() + FeetToAdd);
 
 	if (GrowthPercent > 0.9f && !bGrowingSoundPlayed)
 	{

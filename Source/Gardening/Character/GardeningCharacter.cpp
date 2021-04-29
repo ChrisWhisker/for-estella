@@ -1,82 +1,59 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GardeningCharacter.h"
-#include "Camera/CameraComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/Controller.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Gardening/Actors/Axe.h"
 #include "Gardening/Actors/Bucket.h"
 #include "Gardening/Actors/Plant.h"
 #include "Gardening/Actors/Sack.h"
-#include "Gardening/Character/GardeningCharacterHelper.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
+// #include "Gardening/GardeningPlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AGardeningCharacter
 
 AGardeningCharacter::AGardeningCharacter()
 {
-	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-
-	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
-
-	// Don't rotate when the controller rotates. Let that just affect the camera.
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
-
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
-	GetCharacterMovement()->JumpZVelocity = 600.f;
-	GetCharacterMovement()->AirControl = 0.2f;
-
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	// Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-
-	Helper = CreateDefaultSubobject<UGardeningCharacterHelper>(TEXT("Helper"));
+	PrimaryActorTick.bCanEverTick = false;
 
 	WateringTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Watering Trigger"));
 	WateringTrigger->SetupAttachment(GetMesh());
+
 	WateringTrigger->OnComponentBeginOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapBegin);
 	WateringTrigger->OnComponentEndOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapEnd);
 
 	WaterSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Water Spawn Point"));
-	WaterSpawnPoint->SetupAttachment(WateringTrigger);
+	WaterSpawnPoint->SetupAttachment(GetMesh());
 
-	// Set helper properties
-	Helper->WateringTrigger = WateringTrigger;
-	Helper->WaterSpawnPoint = WaterSpawnPoint;
-	Helper->WaterSound = WaterSound;
-	Helper->WaterParticle = WaterParticle;
-	Helper->WaterSoundFadeInSeconds = WaterSoundFadeInSeconds;
-	Helper->WaterSoundFadeOutSeconds = WaterSoundFadeOutSeconds;
-	Helper->MaxTraceRange = MaxTraceRange;
+	SeedCount = MaxSeeds;
 }
 
 void AGardeningCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!PlantClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Plant Blueprint Class is not set on the character."));
+		return;
+	}
+
+	if (!WaterSound)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Watering sound not set on the character"));
+		return;
+	}
+
+	if (!WaterParticle)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Watering particle not set on the character"));
+		return;
+	}
+
+	// Spawn tool actors in the character's hand and hide inactive ones
 	if (!AxeClass)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Axe class is missing on the Gardening Character"));
@@ -105,126 +82,15 @@ void AGardeningCharacter::BeginPlay()
 	Sack = GetWorld()->SpawnActor<ASack>(SackClass);
 	Sack->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("ToolSocket"));
 	Sack->SetOwner(this);
-
-	// Set helper properties
-	Helper->Axe = Axe;
-	Helper->Bucket = Bucket;
-	Helper->Sack = Sack;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Input
 
 void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
-	// Set up gameplay key bindings
-	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &AGardeningCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AGardeningCharacter::MoveRight);
-
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &AGardeningCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &AGardeningCharacter::LookUpAtRate);
-
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGardeningCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AGardeningCharacter::TouchStopped);
-
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AGardeningCharacter::OnResetVR);
-
-	// Garden-specific bindings
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::FirePressed);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AGardeningCharacter::FireReleased);
 	PlayerInputComponent->BindAction("SwitchTool", IE_Released, this, &AGardeningCharacter::SwitchTool);
-}
-
-// ReSharper disable once CppMemberFunctionMayBeStatic
-void AGardeningCharacter::OnResetVR()
-{
-	// If Gardening is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in Gardening.Build.cs is not automatically propagated
-	// and a linker error will result.
-	// You will need to either:
-	//		Add "HeadMountedDisplay" to [YourProject].Build.cs PublicDependencyModuleNames in order to build successfully (appropriate if supporting VR).
-	// or:
-	//		Comment or delete the call to ResetOrientationAndPosition below (appropriate if not supporting VR)
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
-
-void AGardeningCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	Jump();
-}
-
-void AGardeningCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	StopJumping();
-}
-
-void AGardeningCharacter::TurnAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
-
-void AGardeningCharacter::LookUpAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
-
-void AGardeningCharacter::MoveForward(float Value)
-{
-	if ((Controller != nullptr) && (Value != 0.0f))
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
-	}
-}
-
-void AGardeningCharacter::MoveRight(float Value)
-{
-	if ((Controller != nullptr) && (Value != 0.0f))
-	{
-		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-	}
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void AGardeningCharacter::FirePressed()
-{
-	Helper->FirePressed();
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void AGardeningCharacter::FireReleased()
-{
-	Helper->FireReleased();
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void AGardeningCharacter::SwitchTool()
-{
-	Helper->SwitchTool();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -232,11 +98,11 @@ void AGardeningCharacter::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedC
                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                                 const FHitResult& SweepResult)
 {
-	if (!Helper->bIsPourWaterHeld) { return; }
+	if (!bIsPourWaterHeld) { return; }
 	APlant* Plant = Cast<APlant>(OtherActor);
 	if (!Plant) { return; }
 
-	Helper->WaterPlant(Plant);
+	StartWateringPlant(Plant);
 }
 
 
@@ -247,5 +113,161 @@ void AGardeningCharacter::OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedCom
 	APlant* Plant = Cast<APlant>(OtherActor);
 	if (!Plant) { return; }
 
-	Helper->StopWateringOnePlant(Plant);
+	StopWateringPlant(Plant);
+}
+
+void AGardeningCharacter::SwitchTool()
+{
+	ActiveToolIndex = (ActiveToolIndex + 1) % Tools.Num();
+
+	if (Tools[ActiveToolIndex] == Tool_Seeds)
+	{
+		Sack->SetActorHiddenInGame(false);
+		Bucket->SetActorHiddenInGame(true);
+		Axe->SetActorHiddenInGame(true);
+	}
+	else if (Tools[ActiveToolIndex] == Tool_Water)
+	{
+		Sack->SetActorHiddenInGame(true);
+		Bucket->SetActorHiddenInGame(false);
+		Axe->SetActorHiddenInGame(true);
+	}
+	else if (Tools[ActiveToolIndex] == Tool_Axe)
+	{
+		Sack->SetActorHiddenInGame(true);
+		Bucket->SetActorHiddenInGame(true);
+		Axe->SetActorHiddenInGame(false);
+	}
+}
+
+void AGardeningCharacter::FirePressed()
+{
+	if (Tools[ActiveToolIndex] == Tool_Seeds)
+	{
+		if (SeedCount <= 0) { return; }
+
+		FHitResult Hit;
+		const bool bTraceSucceeded = Trace(Hit);
+		if (!bTraceSucceeded) { return; }
+		AActor* HitActor = Hit.GetActor();
+		if (!HitActor) { return; }
+		PlantSeed(Hit);
+	}
+	else if (Tools[ActiveToolIndex] == Tool_Water)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Watering"));
+		bIsPourWaterHeld = true;
+		StartWatering();
+	}
+	else if (Tools[ActiveToolIndex] == Tool_Axe)
+	{
+		UseAxe();
+	}
+}
+
+void AGardeningCharacter::FireReleased()
+{
+	bIsPourWaterHeld = false;
+	StopWatering();
+}
+
+void AGardeningCharacter::PlantSeed(const FHitResult Hit)
+{
+	if (!Hit.GetActor()->GetClass()->GetName().Contains(TEXT("Landscape")))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *Hit.GetActor()->GetName());
+		return;
+	}
+
+	const float PlantYaw = FMath::RandRange(0.f, 360.f);
+	const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
+	AActor* Spawned = GetWorld()->SpawnActor<APlant>(PlantClass, Hit.Location, PlantingDirection);
+	APlant* SpawnedPlant = Cast<APlant>(Spawned);
+
+	if (SpawnedPlant)
+	{
+		SpawnedPlant->Character = this;
+		SeedCount--;
+	}
+}
+
+void AGardeningCharacter::StartWatering()
+{
+	TArray<AActor*> PlantsInTrigger;
+	WateringTrigger->GetOverlappingActors(PlantsInTrigger, TSubclassOf<APlant>());
+
+	for (AActor* PlantActor : PlantsInTrigger)
+	{
+		APlant* Plant = Cast<APlant>(PlantActor);
+		if (!Plant) { continue; }
+
+		StartWateringPlant(Plant);
+	}
+
+	WaterSoundComponent = UGameplayStatics::SpawnSoundAttached(WaterSound, WateringTrigger);
+	WaterSoundComponent->Stop();
+	WaterSoundComponent->FadeIn(WaterSoundFadeInSeconds, 1.f);
+	WateringParticleComponent = UGameplayStatics::SpawnEmitterAttached(WaterParticle, WaterSpawnPoint);
+}
+
+void AGardeningCharacter::StopWatering()
+{
+	for (APlant* WateredPlant : WateredPlants)
+	{
+		WateredPlant->StopGrowing();
+	}
+	WateredPlants.Empty();
+
+	if (WaterSoundComponent)
+	{
+		WaterSoundComponent->FadeOut(WaterSoundFadeOutSeconds, 0.f);
+	}
+
+	if (WateringParticleComponent)
+	{
+		WateringParticleComponent->Deactivate();
+	}
+}
+
+void AGardeningCharacter::StartWateringPlant(APlant* PlantToWater)
+{
+	PlantToWater->StartGrowing();
+
+	if (!WateredPlants.Contains(PlantToWater))
+	{
+		WateredPlants.Add(PlantToWater);
+	}
+}
+
+void AGardeningCharacter::StopWateringPlant(APlant* WateredPlant)
+{
+	WateredPlant->StopGrowing();
+	WateredPlants.Remove(WateredPlant);
+}
+
+void AGardeningCharacter::UseAxe() const
+{
+	UE_LOG(LogTemp, Warning, TEXT("Axe used."));
+}
+
+bool AGardeningCharacter::Trace(FHitResult& Hit) const
+{
+	AController* OwnerController = GetController();
+	if (!OwnerController) { return false; }
+
+	FVector StartLocation;
+	FRotator Rotation;
+	OwnerController->GetPlayerViewPoint(OUT StartLocation, OUT Rotation);
+
+	const FVector EndLocation = StartLocation + Rotation.Vector() * MaxTraceRange;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
+	                                            ECollisionChannel::ECC_GameTraceChannel1, Params);
+}
+
+void AGardeningCharacter::SetGardenHeightFeet(const float HeightInFeet)
+{
+	GardenHeightFeet = HeightInFeet;
 }

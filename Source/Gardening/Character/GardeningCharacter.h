@@ -3,102 +3,109 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "GardeningCharacterBase.h"
 #include "GardeningCharacter.generated.h"
 
-class UBoxComponent;
+class APlant;
 
 UCLASS(config=Game)
-class AGardeningCharacter : public ACharacter
+class AGardeningCharacter : public AGardeningCharacterBase
 {
 	GENERATED_BODY()
-
-private:
-	////////// PROPERTIES //////////
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
 
 public:
 	////////// FUNCTIONS //////////
 	AGardeningCharacter();
 
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseTurnRate;
+	virtual void SwitchTool();
 
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseLookUpRate;
+	virtual void FirePressed();
 
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	virtual void FireReleased();
+
+	void StartWatering();
+
+	void StopWatering();
+
+	void StartWateringPlant(APlant* PlantToWater);
+
+	void StopWateringPlant(APlant* WateredPlant);
+
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE int32 GetMaxSeeds() const { return MaxSeeds; }
+
+	void SetGardenHeightFeet(float HeightInFeet);
+
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE int32 GetGardenHeightFeet() const { return GardenHeightFeet; }
+
+	////////// PROPERTIES //////////
+	// UPROPERTY(/*Category = "Components",*/ EditAnywhere, BlueprintReadWrite) 
+	UPROPERTY(Category = "Components", EditDefaultsOnly)
+	UBoxComponent* WateringTrigger;
+
+	// UPROPERTY(/*Category = "Components",*/ EditAnywhere, BlueprintReadWrite) 
+	UPROPERTY(Category = "Components", EditDefaultsOnly)
+	USceneComponent* WaterSpawnPoint;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 ActiveToolIndex = 0;
+
+	// Effectively constants
+	UPROPERTY(BlueprintReadOnly)
+	FString Tool_Seeds = TEXT("Seeds");
+	UPROPERTY(BlueprintReadOnly)
+	FString Tool_Water = TEXT("Water");
+	UPROPERTY(BlueprintReadOnly)
+	FString Tool_Axe = TEXT("Axe");
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FString> Tools = {Tool_Seeds, Tool_Water, Tool_Axe};
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 SeedCount;
+
+	bool bIsPourWaterHeld = false;
 
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
-	/** Resets HMD orientation in VR. */
-	void OnResetVR();
 
-	/** Called for forwards/backward input */
-	void MoveForward(float Value);
-
-	/** Called for side to side input */
-	void MoveRight(float Value);
-
-	/** 
-	 * Called via input to turn at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate(float Rate);
-
-	/**
-	 * Called via input to turn look up/down at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void LookUpAtRate(float Rate);
-
-	/** Handler for when a touch input begins. */
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	/** Handler for when a touch input stops. */
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
-
-	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
 
-	/** Called to use the active item (plant seedling, water, attack, etc.) */
-	void FirePressed();
+	void PlantSeed(FHitResult Hit);
 
-	void FireReleased();
+	void UseAxe() const;
 
-	void SwitchTool();
+	bool Trace(FHitResult& Hit) const;
 
 	UFUNCTION()
-	void OnTriggerOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
-	                           class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-	                           const FHitResult& SweepResult);
+	virtual void OnTriggerOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
+	                                   class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	                                   const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnTriggerOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
-	                         class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	virtual void OnTriggerOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
+	                                 class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	////////// PROPERTIES //////////
-	UPROPERTY(EditDefaultsOnly)
-	class UGardeningCharacterHelper* Helper;
+	UPROPERTY(Category = "Components", EditAnywhere)
+	UAudioComponent* WaterSoundComponent;
 
-	UPROPERTY(EditDefaultsOnly)
-	UBoxComponent* WateringTrigger;
+	UPROPERTY(Category = "Components", EditAnywhere)
+	UParticleSystemComponent* WateringParticleComponent;
 
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	USceneComponent* WaterSpawnPoint;
+	UPROPERTY(Category = "References", EditDefaultsOnly)
+	TSubclassOf<class APlant> PlantClass;
+
+	UPROPERTY(Category = "References", EditDefaultsOnly)
+	TSubclassOf<class AAxe> AxeClass;
+
+	UPROPERTY(Category = "References", EditDefaultsOnly)
+	TSubclassOf<class ABucket> BucketClass;
+
+	UPROPERTY(Category = "References", EditDefaultsOnly)
+	TSubclassOf<class ASack> SackClass;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	USoundBase* WaterSound;
@@ -110,26 +117,25 @@ protected:
 	float WaterSoundFadeInSeconds = .5f;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	float WaterSoundFadeOutSeconds = 2.f;
+	float WaterSoundFadeOutSeconds = 1.f;
 
 	UPROPERTY(Category = "Raycasting", EditDefaultsOnly)
 	float MaxTraceRange = 500.f;
 
-	UPROPERTY(Category = "References", EditDefaultsOnly)
-	TSubclassOf<class AAxe> AxeClass;
-
 	UPROPERTY()
 	AAxe* Axe;
-
-	UPROPERTY(Category = "References", EditDefaultsOnly)
-	TSubclassOf<class ABucket> BucketClass;
 
 	UPROPERTY()
 	ABucket* Bucket;
 
-	UPROPERTY(Category = "References", EditDefaultsOnly)
-	TSubclassOf<class ASack> SackClass;
-
 	UPROPERTY()
 	ASack* Sack;
+
+	UPROPERTY(BlueprintReadOnly)
+	float GardenHeightFeet = 0.f;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<APlant*> WateredPlants;
+
+	const int32 MaxSeeds = 10;
 };

@@ -8,7 +8,7 @@
 #include "Plant.generated.h"
 
 class UCurveFloat;
-class UGardeningCharacterHelper;
+class AGardeningCharacter;
 class UWidgetComponent;
 
 UCLASS()
@@ -28,7 +28,7 @@ public:
 
 	////////// PROPERTIES //////////
 	UPROPERTY()
-	UGardeningCharacterHelper* CharacterHelper;
+	AGardeningCharacter* Character;
 
 	UPROPERTY(BlueprintReadOnly)
 	float GrowthProgress = 0.f;
