@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -40,11 +40,9 @@ public:
 	FORCEINLINE int32 GetGardenHeightFeet() const { return GardenHeightFeet; }
 
 	////////// PROPERTIES //////////
-	// UPROPERTY(/*Category = "Components",*/ EditAnywhere, BlueprintReadWrite) 
 	UPROPERTY(Category = "Components", EditDefaultsOnly)
-	UBoxComponent* WateringTrigger;
+	class UBoxComponent* WateringTrigger;
 
-	// UPROPERTY(/*Category = "Components",*/ EditAnywhere, BlueprintReadWrite) 
 	UPROPERTY(Category = "Components", EditDefaultsOnly)
 	USceneComponent* WaterSpawnPoint;
 

@@ -8,7 +8,6 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Gardening/Actors/Plant.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AGardeningCharacterBase
@@ -74,29 +73,6 @@ void AGardeningCharacterBase::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAxis("TurnRate", this, &AGardeningCharacterBase::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AGardeningCharacterBase::LookUpAtRate);
-
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGardeningCharacterBase::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AGardeningCharacterBase::TouchStopped);
-
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AGardeningCharacterBase::OnResetVR);
-}
-
-// ReSharper disable once CppMemberFunctionMayBeStatic
-void AGardeningCharacterBase::OnResetVR()
-{
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
-
-void AGardeningCharacterBase::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	Jump();
-}
-
-void AGardeningCharacterBase::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	StopJumping();
 }
 
 void AGardeningCharacterBase::TurnAtRate(float Rate)
