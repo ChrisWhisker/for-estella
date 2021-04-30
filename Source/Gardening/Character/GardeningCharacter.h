@@ -43,9 +43,6 @@ public:
 	UPROPERTY(Category = "Components", EditDefaultsOnly)
 	class UBoxComponent* WateringTrigger;
 
-	UPROPERTY(Category = "Components", EditDefaultsOnly)
-	USceneComponent* WaterSpawnPoint;
-
 	UPROPERTY(BlueprintReadOnly)
 	int32 ActiveToolIndex = 0;
 
@@ -63,6 +60,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 SeedCount;
 
+	UPROPERTY(BlueprintReadOnly)
 	bool bIsPourWaterHeld = false;
 
 protected:
@@ -87,12 +85,6 @@ protected:
 	                                 class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	////////// PROPERTIES //////////
-	UPROPERTY(Category = "Components", EditAnywhere)
-	UAudioComponent* WaterSoundComponent;
-
-	UPROPERTY(Category = "Components", EditAnywhere)
-	UParticleSystemComponent* WateringParticleComponent;
-
 	UPROPERTY(Category = "References", EditDefaultsOnly)
 	TSubclassOf<class APlant> PlantClass;
 
@@ -104,18 +96,6 @@ protected:
 
 	UPROPERTY(Category = "References", EditDefaultsOnly)
 	TSubclassOf<class ASack> SackClass;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	USoundBase* WaterSound;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	UParticleSystem* WaterParticle;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	float WaterSoundFadeInSeconds = .5f;
-
-	UPROPERTY(Category = "Effects", EditDefaultsOnly)
-	float WaterSoundFadeOutSeconds = 1.f;
 
 	UPROPERTY(Category = "Raycasting", EditDefaultsOnly)
 	float MaxTraceRange = 500.f;

@@ -2,14 +2,11 @@
 
 #include "GardeningCharacter.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Gardening/Actors/Axe.h"
 #include "Gardening/Actors/Bucket.h"
 #include "Gardening/Actors/Plant.h"
 #include "Gardening/Actors/Sack.h"
-#include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystemComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AGardeningCharacter
@@ -24,9 +21,6 @@ AGardeningCharacter::AGardeningCharacter()
 	WateringTrigger->OnComponentBeginOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapBegin);
 	WateringTrigger->OnComponentEndOverlap.AddDynamic(this, &AGardeningCharacter::OnTriggerOverlapEnd);
 
-	WaterSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Water Spawn Point"));
-	WaterSpawnPoint->SetupAttachment(GetMesh());
-
 	SeedCount = MaxSeeds;
 }
 
@@ -37,18 +31,6 @@ void AGardeningCharacter::BeginPlay()
 	if (!PlantClass)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Plant Blueprint Class is not set on the character."));
-		return;
-	}
-
-	if (!WaterSound)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Watering sound not set on the character"));
-		return;
-	}
-
-	if (!WaterParticle)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Watering particle not set on the character"));
 		return;
 	}
 
@@ -104,7 +86,6 @@ void AGardeningCharacter::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedC
 	StartWateringPlant(Plant);
 }
 
-
 // ReSharper disable once CppMemberFunctionMayBeConst
 void AGardeningCharacter::OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -154,7 +135,6 @@ void AGardeningCharacter::FirePressed()
 	}
 	else if (Tools[ActiveToolIndex] == Tool_Water)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Watering"));
 		bIsPourWaterHeld = true;
 		StartWatering();
 	}
@@ -203,10 +183,7 @@ void AGardeningCharacter::StartWatering()
 		StartWateringPlant(Plant);
 	}
 
-	WaterSoundComponent = UGameplayStatics::SpawnSoundAttached(WaterSound, WateringTrigger);
-	WaterSoundComponent->Stop();
-	WaterSoundComponent->FadeIn(WaterSoundFadeInSeconds, 1.f);
-	WateringParticleComponent = UGameplayStatics::SpawnEmitterAttached(WaterParticle, WaterSpawnPoint);
+	Bucket->StartPouring();
 }
 
 void AGardeningCharacter::StopWatering()
@@ -217,15 +194,7 @@ void AGardeningCharacter::StopWatering()
 	}
 	WateredPlants.Empty();
 
-	if (WaterSoundComponent)
-	{
-		WaterSoundComponent->FadeOut(WaterSoundFadeOutSeconds, 0.f);
-	}
-
-	if (WateringParticleComponent)
-	{
-		WateringParticleComponent->Deactivate();
-	}
+	Bucket->StopPouring();
 }
 
 void AGardeningCharacter::StartWateringPlant(APlant* PlantToWater)

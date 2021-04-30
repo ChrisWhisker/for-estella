@@ -15,7 +15,33 @@ public:
 	////////// FUNCTIONS //////////
 	ABucket();
 
+	void StartPouring();
+
+	void StopPouring();
+
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
+
+	////////// PROPERTIES //////////
+	UPROPERTY(Category = "Components", EditDefaultsOnly)
+	USceneComponent* WaterSpawnPoint;
+
+	UPROPERTY(Category = "Components", EditAnywhere)
+	UAudioComponent* WaterSoundComponent;
+
+	UPROPERTY(Category = "Components", EditAnywhere)
+	UParticleSystemComponent* WateringParticleComponent;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	USoundBase* WaterSound;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	UParticleSystem* WaterParticle;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	float WaterSoundFadeInSeconds = .5f;
+
+	UPROPERTY(Category = "Effects", EditDefaultsOnly)
+	float WaterSoundFadeOutSeconds = 1.f;
 };

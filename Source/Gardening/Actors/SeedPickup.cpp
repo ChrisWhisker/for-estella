@@ -12,10 +12,13 @@ ASeedPickup::ASeedPickup()
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
+	
 	TrunkMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Trunk"));
 	TrunkMesh->SetupAttachment(Root);
+	
 	LeavesMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Leaves"));
 	LeavesMesh->SetupAttachment(Root);
+	
 	Trigger = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Trigger"));
 	Trigger->SetupAttachment(Root);
 	Trigger->OnComponentBeginOverlap.AddDynamic(this, &ASeedPickup::OnOverlapBegin);
