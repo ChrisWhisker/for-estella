@@ -14,10 +14,13 @@ As the game is actively being worked on, the play cycle is not complete and impr
 Depending on the individual licenses of each item, some or all assets listed here should be considered temporary placeholder art.
 
 ### Animations
+- Falling Idle on mixamo.com
 - Happy Idle from Female Animation Pack on mixamo.com
-- Left Strafe on mixamo.com
+- Joyful Jump Land on mixamo.com
+- Joyful Jump Takeoff on mixamo.com
 - Jump on mixamo.com
 - Left Strafe Walk on mixamo.com
+- Left Strafe on mixamo.com
 - Right Strafe Walk on mixamo.com
 - Right Strafe on mixamo.com
 - Run Backward on mixamo.com
