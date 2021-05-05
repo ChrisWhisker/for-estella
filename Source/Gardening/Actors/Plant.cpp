@@ -14,6 +14,7 @@ APlant::APlant()
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
+
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 	Mesh->OnComponentBeginOverlap.AddDynamic(this, &APlant::OnOverlapBegin);
@@ -59,15 +60,25 @@ void APlant::BeginPlay()
 	}
 
 	ProgressBarWidget->SetVisibility(false);
-
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &APlant::InitialSetupDelayed, 0.05, false);
 }
 
-void APlant::InitialSetupDelayed() const
+void APlant::SecondarySetup(AGardeningCharacter* Char)
 {
+	Character = Char;
+	if (!Character)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Character not found on Plant"));
+		return;
+	}
+	HeightChanged.BindUObject(Character, &AGardeningCharacter::AddGardenHeightFeet);
+
 	const float FeetToAdd = FMath::RandRange(.25f, .5f);
-	Character->SetGardenHeightFeet(Character->GetGardenHeightFeet() + FeetToAdd);
+
+	const bool bIsBound = HeightChanged.ExecuteIfBound(FeetToAdd);
+	if (!bIsBound)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HeightChanged is not bound to Character."));
+	}
 }
 
 void APlant::Tick(float DeltaTime)
@@ -104,7 +115,12 @@ void APlant::TimelineProgress(float Value)
 
 	const float GrowthPercent = GrowthProgress / GrowthTimelineLength;
 	const float FeetToAdd = (NewMeshScale.Z - CurrentHeight) * ScaleToFeetMultiplier;
-	Character->SetGardenHeightFeet(Character->GetGardenHeightFeet() + FeetToAdd);
+	
+	const bool bIsBound = HeightChanged.ExecuteIfBound(FeetToAdd);
+	if (!bIsBound)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HeightChanged is not bound to Character."));
+	}
 
 	if (GrowthPercent > 0.9f && !bGrowingSoundPlayed)
 	{

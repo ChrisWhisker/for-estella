@@ -165,7 +165,7 @@ void AGardeningCharacter::PlantSeed(const FHitResult Hit)
 
 	if (SpawnedPlant)
 	{
-		SpawnedPlant->Character = this;
+		SpawnedPlant->SecondarySetup(this);
 		SeedCount--;
 	}
 }
@@ -235,7 +235,7 @@ bool AGardeningCharacter::Trace(FHitResult& Hit) const
 	                                            ECollisionChannel::ECC_GameTraceChannel1, Params);
 }
 
-void AGardeningCharacter::SetGardenHeightFeet(const float HeightInFeet)
+void AGardeningCharacter::AddGardenHeightFeet(const float FeetToAdd)
 {
-	GardenHeightFeet = HeightInFeet;
+	GardenHeightFeet += FeetToAdd;
 }

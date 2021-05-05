@@ -11,6 +11,8 @@ class UCurveFloat;
 class AGardeningCharacter;
 class UWidgetComponent;
 
+DECLARE_DELEGATE_OneParam(FHeightChanged, float)
+
 UCLASS()
 class GARDENING_API APlant : public AActor
 {
@@ -19,6 +21,10 @@ class GARDENING_API APlant : public AActor
 public:
 	////////// FUNCTIONS //////////
 	APlant();
+
+	/* This is used to ensure references are valid before performing the dependent setup*/
+	UFUNCTION()
+	void SecondarySetup(AGardeningCharacter* Char);
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -36,13 +42,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	float GrowthTimelineLength;
 
+	FHeightChanged HeightChanged;
+
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
-
-	/* This is used to ensure references are valid before performing the dependent setup*/
-	UFUNCTION()
-	void InitialSetupDelayed() const;
 
 	UFUNCTION()
 	void TimelineProgress(float Value);
