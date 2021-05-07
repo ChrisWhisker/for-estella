@@ -42,8 +42,8 @@ void AGardeningCharacter::BeginPlay()
 	}
 	Axe = GetWorld()->SpawnActor<AAxe>(AxeClass);
 	Axe->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("ToolSocket"));
-	Axe->SetOwner(this);
 	Axe->SetActorHiddenInGame(true);
+	Axe->SecondarySetup(this);
 
 	if (!BucketClass)
 	{
@@ -105,18 +105,21 @@ void AGardeningCharacter::SwitchTool()
 		Sack->SetActorHiddenInGame(false);
 		Bucket->SetActorHiddenInGame(true);
 		Axe->SetActorHiddenInGame(true);
+		Axe->Trigger->SetActive(false);
 	}
 	else if (Tools[ActiveToolIndex] == Tool_Water)
 	{
 		Sack->SetActorHiddenInGame(true);
 		Bucket->SetActorHiddenInGame(false);
 		Axe->SetActorHiddenInGame(true);
+		Axe->Trigger->SetActive(false);
 	}
 	else if (Tools[ActiveToolIndex] == Tool_Axe)
 	{
 		Sack->SetActorHiddenInGame(true);
 		Bucket->SetActorHiddenInGame(true);
 		Axe->SetActorHiddenInGame(false);
+		Axe->Trigger->SetActive(true);
 	}
 }
 
@@ -155,7 +158,8 @@ void AGardeningCharacter::PlantSeed(const FHitResult Hit)
 {
 	if (!Hit.GetActor()->GetClass()->GetName().Contains(TEXT("Landscape")))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *Hit.GetActor()->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Can't plant a seed on [%s: %s]"), *Hit.GetActor()->GetName(),
+		       *Hit.GetComponent()->GetName());
 		return;
 	}
 
@@ -231,12 +235,18 @@ bool AGardeningCharacter::Trace(FHitResult& Hit) const
 	const FVector EndLocation = StartLocation + Rotation.Vector() * MaxTraceRange;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(Axe);
 
 	return GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
 	                                            ECollisionChannel::ECC_GameTraceChannel1, Params);
 }
 
-void AGardeningCharacter::AddGardenHeightFeet(const float FeetToAdd)
+void AGardeningCharacter::AddGardenHeightFeet(float FeetToAdd)
 {
+	if (GardenHeightFeet + FeetToAdd < 0)
+	{
+		FeetToAdd = -GardenHeightFeet;
+	}
+
 	GardenHeightFeet += FeetToAdd;
 }

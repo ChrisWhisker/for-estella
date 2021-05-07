@@ -72,13 +72,7 @@ void APlant::SecondarySetup(AGardeningCharacter* Char)
 	}
 	HeightChanged.BindUObject(Character, &AGardeningCharacter::AddGardenHeightFeet);
 
-	const float FeetToAdd = FMath::RandRange(.25f, .5f);
-
-	const bool bIsBound = HeightChanged.ExecuteIfBound(FeetToAdd);
-	if (!bIsBound)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("HeightChanged is not bound to Character."));
-	}
+	AddHeight(FMath::RandRange(.25f, .5f));
 }
 
 void APlant::Tick(float DeltaTime)
@@ -89,6 +83,8 @@ void APlant::Tick(float DeltaTime)
 	{
 		GrowthTimeline.TickTimeline(DeltaTime);
 	}
+
+	UE_LOG(LogTemp, Display, TEXT("HeightInFeet is %f"), HeightInFeet);
 }
 
 void APlant::StartGrowing()
@@ -115,14 +111,9 @@ void APlant::TimelineProgress(float Value)
 
 	const float GrowthPercent = GrowthProgress / GrowthTimelineLength;
 	const float FeetToAdd = (NewMeshScale.Z - CurrentHeight) * ScaleToFeetMultiplier;
-	
-	const bool bIsBound = HeightChanged.ExecuteIfBound(FeetToAdd);
-	if (!bIsBound)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("HeightChanged is not bound to Character."));
-	}
+	const bool bHeightAdded = AddHeight(FeetToAdd);
 
-	if (GrowthPercent > 0.9f && !bGrowingSoundPlayed)
+	if (bHeightAdded && GrowthPercent > 0.9f && !bGrowingSoundPlayed)
 	{
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), RustleSound, GetActorLocation());
 		bGrowingSoundPlayed = true;
@@ -137,4 +128,29 @@ void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 	{
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), RustleSound, GetActorLocation());
 	}
+}
+
+bool APlant::AddHeight(const float FeetToAdd)
+{
+	const bool bIsBound = HeightChanged.ExecuteIfBound(FeetToAdd);
+	if (!bIsBound)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HeightChanged is not bound to Character."));
+		return false;
+	}
+
+	HeightInFeet += FeetToAdd;
+	return true;
+}
+
+// TODO Cause damage first
+float APlant::CutDown()
+{
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &APlant::DestroySelf, 0.1f, false);
+	return HeightInFeet;
+}
+
+void APlant::DestroySelf()
+{
+	Destroy();
 }

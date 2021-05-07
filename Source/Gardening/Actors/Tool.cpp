@@ -12,7 +12,6 @@ ATool::ATool()
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
-	// Mesh->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlapBegin);
 }
 
 void ATool::BeginPlay()
