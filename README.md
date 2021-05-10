@@ -3,12 +3,11 @@ Grow your garden faster and taller than your opponent. The player with the bigge
 
 ## Controls
 - Move - WASD
-- Switch tool (seeds / axe) - Right click
+- Switch tool (seed bag/water bucket/axe) - Right click
 - Use tool - Left click
-- Water plants - E key
 
 ## Work in Progress
-As the game is actively being worked on, the play cycle is not complete and improvements are constantly being made.
+As the game is actively being worked on, the play cycle is not complete and improvements are consistently being made.
 
 ## Art Credits
 Depending on the individual licenses of each item, some or all assets listed here should be considered temporary placeholder art.
