@@ -64,6 +64,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsPourWaterHeld = false;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsAttacking = false;
+
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
@@ -72,7 +75,7 @@ protected:
 
 	void PlantSeed(FHitResult Hit);
 
-	void UseAxe() const;
+	void UseAxe();
 
 	bool Trace(FHitResult& Hit) const;
 

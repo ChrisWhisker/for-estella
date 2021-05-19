@@ -146,6 +146,7 @@ void AGardeningCharacter::FirePressed()
 
 void AGardeningCharacter::FireReleased()
 {
+	bIsAttacking = false;
 	bIsPourWaterHeld = false;
 	StopWatering();
 }
@@ -213,9 +214,9 @@ void AGardeningCharacter::StopWateringPlant(APlant* WateredPlant)
 	WateredPlants.Remove(WateredPlant);
 }
 
-void AGardeningCharacter::UseAxe() const
+void AGardeningCharacter::UseAxe()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Axe used."));
+	bIsAttacking = true;
 }
 
 bool AGardeningCharacter::Trace(FHitResult& Hit) const
