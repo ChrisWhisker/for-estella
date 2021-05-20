@@ -31,7 +31,7 @@ protected:
 	UAudioComponent* WaterSoundComponent;
 
 	UPROPERTY(Category = "Components", EditAnywhere)
-	UParticleSystemComponent* WateringParticleComponent;
+	UParticleSystemComponent* WaterParticleComponent;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
 	USoundBase* WaterSound;

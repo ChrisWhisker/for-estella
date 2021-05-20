@@ -18,11 +18,36 @@ APlant::APlant()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 	Mesh->OnComponentBeginOverlap.AddDynamic(this, &APlant::OnOverlapBegin);
+	Mesh->SetRelativeScale3D(FVector(0.1, 0.1, 0.1));
 }
 
 void APlant::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!RustleSound)
+	{
+		UE_LOG(LogTemp, Error, TEXT("RustleSound is not set on Plant.cpp"));
+		return;
+	}
+
+	if (!PlantingSound)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlantingSound is not set on Plant.cpp"));
+		return;
+	}
+
+	if (!PlantingParticle)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlantingParticle is not set on Plant.cpp"));
+		return;
+	}
+
+	if (!GrowthCurve)
+	{
+		UE_LOG(LogTemp, Error, TEXT("GrowthCurve is not set on Plant.cpp"));
+		return;
+	}
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlantingSound, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PlantingParticle, GetActorLocation());
@@ -42,7 +67,7 @@ void APlant::BeginPlay()
 
 	GrowthTimeline.AddInterpFloat(GrowthCurve, TimelineProgress);
 	GrowthTimeline.SetLooping(false);
-	StartScale = Mesh->GetRelativeScale3D();
+	InitialScale = Mesh->GetRelativeScale3D();
 	GrowthTimelineLength = GrowthTimeline.GetTimelineLength();
 
 	UActorComponent* ProgressBar = this->GetComponentByClass(UWidgetComponent::StaticClass());
@@ -79,7 +104,7 @@ void APlant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (ProgressBarWidget->IsVisible())
+	if (ProgressBarWidget && ProgressBarWidget->IsVisible())
 	{
 		GrowthTimeline.TickTimeline(DeltaTime);
 	}
@@ -105,7 +130,7 @@ void APlant::StopGrowing()
 void APlant::TimelineProgress(float Value)
 {
 	const float CurrentHeight = Mesh->GetComponentScale().Z;
-	const FVector NewMeshScale = FMath::Lerp(StartScale, MaxScale, Value);
+	const FVector NewMeshScale = FMath::Lerp(InitialScale, MaxScale, Value);
 	Mesh->SetRelativeScale3D(NewMeshScale);
 	GrowthProgress = GrowthTimeline.GetPlaybackPosition();
 

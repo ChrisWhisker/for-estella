@@ -93,7 +93,7 @@ protected:
 
 	FTimeline GrowthTimeline;
 
-	FVector StartScale;
+	FVector InitialScale;
 
 	bool bGrowingSoundPlayed = false;
 
