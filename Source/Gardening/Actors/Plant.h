@@ -44,6 +44,8 @@ public:
 
 	FHeightChanged HeightChanged;
 
+	float CutDown();
+
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
@@ -55,6 +57,10 @@ protected:
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
 	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 	                    const FHitResult& SweepResult);
+
+	bool AddHeight(const float FeetToAdd);
+
+	void DestroySelf();
 
 	////////// PROPERTIES //////////
 	UPROPERTY()
@@ -87,9 +93,13 @@ protected:
 
 	FTimeline GrowthTimeline;
 
-	FVector StartScale;
+	FVector InitialScale;
 
 	bool bGrowingSoundPlayed = false;
 
 	const float ScaleToFeetMultiplier = 5.16f;
+
+	float HeightInFeet = 0.f;
+
+	FTimerHandle DestroyTimerHandle;
 };

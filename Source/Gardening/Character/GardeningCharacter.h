@@ -35,7 +35,7 @@ public:
 	FORCEINLINE int32 GetMaxSeeds() const { return MaxSeeds; }
 
 	UFUNCTION()
-	void AddGardenHeightFeet(const float FeetToAdd);
+	void AddGardenHeightFeet(float FeetToAdd);
 
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE int32 GetGardenHeightFeet() const { return GardenHeightFeet; }
