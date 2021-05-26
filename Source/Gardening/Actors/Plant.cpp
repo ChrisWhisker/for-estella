@@ -85,6 +85,7 @@ void APlant::BeginPlay()
 	}
 
 	ProgressBarWidget->SetVisibility(false);
+	Health = MaxHealth;
 }
 
 void APlant::SecondarySetup(AGardeningCharacter* Char)
@@ -108,8 +109,6 @@ void APlant::Tick(float DeltaTime)
 	{
 		GrowthTimeline.TickTimeline(DeltaTime);
 	}
-
-	UE_LOG(LogTemp, Display, TEXT("HeightInFeet is %f"), HeightInFeet);
 }
 
 void APlant::StartGrowing()
@@ -168,9 +167,25 @@ bool APlant::AddHeight(const float FeetToAdd)
 	return true;
 }
 
-// TODO Cause damage first
+float APlant::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+                         AActor* DamageCauser)
+{
+	float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DamageToApply = FMath::Min(Health, DamageToApply);
+	Health -= DamageToApply;
+	UE_LOG(LogTemp, Warning, TEXT("Health left: %f"), Health);
+
+	if (Health <= 0)
+	{
+		CutDown();
+	}
+
+	return DamageToApply;
+}
+
 float APlant::CutDown()
 {
+	Character->AddGardenHeightFeet(-HeightInFeet);
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &APlant::DestroySelf, 0.1f, false);
 	return HeightInFeet;
 }

@@ -32,6 +32,8 @@ public:
 
 	void StopGrowing();
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 	////////// PROPERTIES //////////
 	UPROPERTY()
 	AGardeningCharacter* Character;
@@ -102,4 +104,8 @@ protected:
 	float HeightInFeet = 0.f;
 
 	FTimerHandle DestroyTimerHandle;
+
+	float MaxHealth = 100;
+
+	float Health;
 };

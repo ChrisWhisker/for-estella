@@ -51,15 +51,12 @@ void AAxe::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActo
 		UE_LOG(LogTemp, Error, TEXT("Character not found on Axe"));
 		return;
 	}
-
 	if (!Character->bIsAttacking) { return; }
 
-	// TODO Height is not being reflected on HUD correctly
 	APlant* HitPlant = Cast<APlant>(OtherActor);
 	if (HitPlant)
 	{
-		const float KilledPlantHeight = HitPlant->CutDown();
-		UE_LOG(LogTemp, Warning, TEXT("KilledPlantHeight is %f"), KilledPlantHeight);
-		Character->AddGardenHeightFeet(-KilledPlantHeight);
+		const FPointDamageEvent DamageEvent(DamagePerStrike, FHitResult(), FVector(0, 0, 0), nullptr);
+		HitPlant->TakeDamage(DamagePerStrike, DamageEvent, Character->GetController(), this);
 	}
 }
