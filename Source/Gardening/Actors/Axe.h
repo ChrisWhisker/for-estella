@@ -35,4 +35,6 @@ protected:
 	////////// PROPERTIES //////////
 	UPROPERTY()
 	AGardeningCharacter* Character;
+
+	float DamagePerStrike = 34;
 };
