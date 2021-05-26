@@ -22,7 +22,6 @@ Depending on the individual licenses of each item, some or all assets listed her
 |Happy Idle|Female Animation Pack on mixamo.com|
 |Joyful Jump|mixamo.com|
 |Joyful Jump Takeoff|mixamo.com|
-|Jump |mixamo.com|
 |Left Strafe Walk|mixamo.com|
 |Left Strafe|mixamo.com|
 |Right Strafe Walk|mixamo.com|
