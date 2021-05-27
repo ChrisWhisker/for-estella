@@ -51,7 +51,7 @@ void AAxe::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActo
 		UE_LOG(LogTemp, Error, TEXT("Character not found on Axe"));
 		return;
 	}
-	if (!Character->bIsAttacking) { return; }
+	if (!Character->bIsAttacking || !bAxeHeadActive) { return; }
 
 	APlant* HitPlant = Cast<APlant>(OtherActor);
 	if (HitPlant)
