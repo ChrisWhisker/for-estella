@@ -17,7 +17,7 @@ public:
 
 	void StartPouring();
 
-	void StopPouring();
+	void StopPouring() const;
 
 protected:
 	////////// FUNCTIONS //////////

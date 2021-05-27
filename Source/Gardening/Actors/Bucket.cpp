@@ -19,7 +19,7 @@ ABucket::ABucket()
 	// Place water spawn point
 	WaterSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Water Spawn Point"));
 	WaterSpawnPoint->SetupAttachment(Mesh);
-	const FVector WaterSpawnTranslation = FVector(0, 0, -400);
+	const FVector WaterSpawnTranslation = FVector(0, -50, -400);
 	const FRotator WaterSpawnRotation = FRotator(0, 0, 0);
 	const FVector WaterSpawnScale = FVector(0.67, 0.67, 0.67);
 	WaterSpawnPoint->SetRelativeTransform(FTransform(WaterSpawnRotation, WaterSpawnTranslation, WaterSpawnScale),
@@ -52,7 +52,7 @@ void ABucket::StartPouring()
 	WaterParticleComponent->SetTranslucentSortPriority(-1);
 }
 
-void ABucket::StopPouring()
+void ABucket::StopPouring() const
 {
 	if (WaterSoundComponent)
 	{
