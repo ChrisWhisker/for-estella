@@ -68,7 +68,7 @@ protected:
 	UPROPERTY()
 	USceneComponent* Root;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(Category = "Effects", EditDefaultsOnly)
@@ -105,7 +105,9 @@ protected:
 
 	FTimerHandle DestroyTimerHandle;
 
+	UPROPERTY(BlueprintReadOnly)
 	float MaxHealth = 100;
 
+	UPROPERTY(BlueprintReadOnly)
 	float Health;
 };

@@ -36,7 +36,7 @@ protected:
 	UPROPERTY()
 	AGardeningCharacter* Character;
 
-	float DamagePerStrike = 34;
+	float DamagePerStrike = 51;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bAxeHeadActive = false; // whether or not the axe will currently cause damage
