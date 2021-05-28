@@ -24,6 +24,7 @@ Depending on the individual licenses of each item, some or all assets listed her
 |Joyful Jump Takeoff|mixamo.com|
 |Left Strafe Walk|mixamo.com|
 |Left Strafe|mixamo.com|
+|Plant Tree|mixamo.com|
 |Right Strafe Walk|mixamo.com|
 |Right Strafe|mixamo.com|
 |Run Backward|mixamo.com|
@@ -31,6 +32,12 @@ Depending on the individual licenses of each item, some or all assets listed her
 |Standing Melee Attack Downward|mixamo.com|
 |Walking Backwards|mixamo.com|
 |Walking |mixamo.com|
+
+### Fonts
+|Name|Source|Artist|
+|--|--|--|
+|The Old Forest|dafont.com|Brittney Murphy Design|
+|Woodgod|dafont.com|Daniel Zadorozny (Iconian Fonts)|
 
 ### Models
 |Name|Source|Artist|
@@ -51,12 +58,14 @@ Depending on the individual licenses of each item, some or all assets listed her
 ### Sounds
 |Name|Source|Artist|
 |--|--|--|
+|Brook 2.wav|freesound.org|straget|
 |Bush 1|freesound.org|schademans|
-|Ghost Woods|opengameart.org|iamoneabe |
+|forest_cicada_loop.flac|freesound.org|Nimlos|
+|Ghost Woods|opengameart.org|iamoneabe|
 |Skaen Bush|freesound.org|schademans|
-|splat 005.wav|freesound.org|yottasounds |
+|splat 005.wav|freesound.org|yottasounds|
 |Splat/Squish 2|freesound.org|mrickey13|
-|Water Stream (Looped)|freesound.org|tymorafarr |
+|Water Stream (Looped)|freesound.org|tymorafarr|
 
 ### Textures
 |Name|Source|
