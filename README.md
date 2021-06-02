@@ -10,7 +10,7 @@ Plant seedlings, water your shrubs, and sabotage Twiggan with your axe.
 - Use tool / attack - Left click
 
 ## Work in Progress
-As the game is actively being worked on, the play cycle is not complete and improvements are consistently being made.
+As the game is actively being worked on, keep in mind ***the gameplay loop is not complete*** and improvements are consistently being made.
 
 ## Art Credits
 Depending on the individual licenses of each item, some or all assets listed here should be considered temporary placeholder art.
