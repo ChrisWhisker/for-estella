@@ -129,12 +129,14 @@ void AGardeningCharacter::FirePressed()
 	{
 		if (SeedCount <= 0) { return; }
 
-		FHitResult Hit;
-		const bool bTraceSucceeded = Trace(Hit);
-		if (!bTraceSucceeded) { return; }
-		AActor* HitActor = Hit.GetActor();
-		if (!HitActor) { return; }
-		PlantSeed(Hit);
+		bIsPlanting = true;
+
+		// FHitResult Hit;
+		// const bool bTraceSucceeded = Trace(Hit);
+		// if (!bTraceSucceeded) { return; }
+		// AActor* HitActor = Hit.GetActor();
+		// if (!HitActor) { return; }
+		// PlantSeed(Hit);
 	}
 	else if (Tools[ActiveToolIndex] == Tool_Water)
 	{
@@ -143,12 +145,13 @@ void AGardeningCharacter::FirePressed()
 	}
 	else if (Tools[ActiveToolIndex] == Tool_Axe)
 	{
-		UseAxe();
+		bIsAttacking = true;
 	}
 }
 
 void AGardeningCharacter::FireReleased()
 {
+	bIsPlanting = false;
 	bIsAttacking = false;
 	bIsPourWaterHeld = false;
 	StopWatering();
@@ -216,11 +219,6 @@ void AGardeningCharacter::StopWateringPlant(APlant* WateredPlant)
 {
 	WateredPlant->StopGrowing();
 	WateredPlants.Remove(WateredPlant);
-}
-
-void AGardeningCharacter::UseAxe()
-{
-	bIsAttacking = true;
 }
 
 bool AGardeningCharacter::Trace(FHitResult& Hit) const

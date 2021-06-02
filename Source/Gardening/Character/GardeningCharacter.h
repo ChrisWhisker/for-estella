@@ -61,6 +61,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 SeedCount;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsPlanting = false;
+	
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsPourWaterHeld = false;
 
@@ -74,8 +77,6 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void PlantSeed(FHitResult Hit);
-
-	void UseAxe();
 
 	bool Trace(FHitResult& Hit) const;
 
