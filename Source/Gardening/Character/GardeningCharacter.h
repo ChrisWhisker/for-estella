@@ -36,12 +36,6 @@ public:
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE int32 GetMaxSeeds() const { return MaxSeeds; }
 
-	UFUNCTION()
-	void AddGardenHeightFeet(float FeetToAdd);
-
-	UFUNCTION(BlueprintGetter)
-	FORCEINLINE int32 GetGardenHeightFeet() const { return GardenHeightFeet; }
-
 	////////// PROPERTIES //////////
 	UPROPERTY(Category = "Components", EditDefaultsOnly)
 	class UBoxComponent* WateringTrigger;
@@ -114,9 +108,6 @@ protected:
 
 	UPROPERTY()
 	ASack* Sack;
-
-	UPROPERTY(BlueprintReadOnly)
-	float GardenHeightFeet = 0.f;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<APlant*> WateredPlants;

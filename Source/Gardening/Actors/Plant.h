@@ -8,10 +8,7 @@
 #include "Plant.generated.h"
 
 class UCurveFloat;
-class AGardeningCharacter;
 class UWidgetComponent;
-
-DECLARE_DELEGATE_OneParam(FHeightChanged, float)
 
 UCLASS()
 class GARDENING_API APlant : public AActor
@@ -22,10 +19,6 @@ public:
 	////////// FUNCTIONS //////////
 	APlant();
 
-	/* This is used to ensure references are valid before performing the dependent setup*/
-	UFUNCTION()
-	void SecondarySetup(AGardeningCharacter* Char);
-
 	virtual void Tick(float DeltaTime) override;
 
 	void StartGrowing();
@@ -35,16 +28,11 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	////////// PROPERTIES //////////
-	UPROPERTY()
-	AGardeningCharacter* Character;
-
 	UPROPERTY(BlueprintReadOnly)
 	float GrowthProgress = 0.f;
 
 	UPROPERTY(BlueprintReadOnly)
 	float GrowthTimelineLength;
-
-	FHeightChanged HeightChanged;
 
 	float CutDown();
 

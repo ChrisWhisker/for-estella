@@ -25,9 +25,6 @@ protected:
 	UPROPERTY()
 	APawn* PlayerPawn;
 
-	// UPROPERTY(EditAnywhere)
-	// float AcceptanceRadius = 200;
-
 	UPROPERTY(EditAnywhere)
 	float AttackPlayerDistance = 10000;
 

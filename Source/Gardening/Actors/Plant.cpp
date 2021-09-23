@@ -5,7 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Gardening/Character/GardeningCharacter.h"
+#include "Gardening/Game/GardeningGameState.h"
 #include "Kismet/GameplayStatics.h"
 
 APlant::APlant()
@@ -86,18 +86,6 @@ void APlant::BeginPlay()
 
 	ProgressBarWidget->SetVisibility(false);
 	Health = MaxHealth;
-}
-
-void APlant::SecondarySetup(AGardeningCharacter* Char)
-{
-	Character = Char;
-	if (!Character)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Character not found on Plant"));
-		return;
-	}
-	HeightChanged.BindUObject(Character, &AGardeningCharacter::AddGardenHeightFeet);
-
 	AddHeight(FMath::RandRange(.25f, .5f));
 }
 
@@ -156,15 +144,13 @@ void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 
 bool APlant::AddHeight(const float FeetToAdd)
 {
-	const bool bIsBound = HeightChanged.ExecuteIfBound(FeetToAdd);
-	if (!bIsBound)
+	if (GetWorld() != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HeightChanged is not bound to Character."));
-		return false;
+		GetWorld()->GetGameState<AGardeningGameState>()->AddGardenHeightFeet(0, FeetToAdd);
+		HeightInFeet += FeetToAdd;
+		return true;
 	}
-
-	HeightInFeet += FeetToAdd;
-	return true;
+	return false;
 }
 
 float APlant::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -185,9 +171,13 @@ float APlant::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 
 float APlant::CutDown()
 {
-	Character->AddGardenHeightFeet(-HeightInFeet);
-	GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &APlant::DestroySelf, 0.1f, false);
-	return HeightInFeet;
+	if (GetWorld() != nullptr)
+	{
+		GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &APlant::DestroySelf, 0.1f, false);
+		GetWorld()->GetGameState<AGardeningGameState>()->AddGardenHeightFeet(0, -HeightInFeet);
+		return HeightInFeet;
+	}
+	return 0;
 }
 
 void APlant::DestroySelf()
