@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "Character/GardeningCharacter.h"
+#include "Gardening/Character/GardeningCharacter.h"
 
 #include "GardeningAIController.generated.h"
 
