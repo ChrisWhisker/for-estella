@@ -19,7 +19,7 @@ public:
 
 	virtual void SwitchTool();
 
-	virtual void SetActiveTool(FString Tool);
+	virtual void SetActiveTool(const FString NewActiveTool);
 
 	virtual void FirePressed();
 

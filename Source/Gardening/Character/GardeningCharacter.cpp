@@ -96,77 +96,30 @@ void AGardeningCharacter::OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedCom
 	StopWateringPlant(Plant);
 }
 
-// void AGardeningCharacter::SwitchTool()
-// {
-// 	ActiveToolIndex = (ActiveToolIndex + 1) % Tools.Num();
-//
-// 	if (Tools[ActiveToolIndex] == Tool_Seeds)
-// 	{
-// 		Sack->SetActorHiddenInGame(false);
-// 		Bucket->SetActorHiddenInGame(true);
-// 		Axe->SetActorHiddenInGame(true);
-// 		Axe->Trigger->SetActive(false);
-// 	}
-// 	else if (Tools[ActiveToolIndex] == Tool_Water)
-// 	{
-// 		Sack->SetActorHiddenInGame(true);
-// 		Bucket->SetActorHiddenInGame(false);
-// 		Axe->SetActorHiddenInGame(true);
-// 		Axe->Trigger->SetActive(false);
-// 	}
-// 	else if (Tools[ActiveToolIndex] == Tool_Axe)
-// 	{
-// 		Sack->SetActorHiddenInGame(true);
-// 		Bucket->SetActorHiddenInGame(true);
-// 		Axe->SetActorHiddenInGame(false);
-// 		Axe->Trigger->SetActive(true);
-// 	}
-// }
-
 void AGardeningCharacter::SwitchTool()
 {
-	ActiveToolIndex = (ActiveToolIndex + 1) % Tools.Num();
-
-	// UE_LOG(LogTemp, Error, TEXT("Was %s, is now %s"), *Tools[ActiveToolIndex], *Tools[ActiveToolIndex]);
-	SetActiveTool(Tools[ActiveToolIndex]);
-
-	if (Tools[ActiveToolIndex] == Tool_Seeds)
-	{
-		SetActiveTool(Tool_Seeds);
-	}
-	else if (Tools[ActiveToolIndex] == Tool_Water)
-	{
-		SetActiveTool(Tool_Water);
-	}
-	else if (Tools[ActiveToolIndex] == Tool_Axe)
-	{
-		SetActiveTool(Tool_Axe);
-	}
+	const int32 NewActiveToolIndex = (ActiveToolIndex + 1) % Tools.Num();
+	SetActiveTool(Tools[NewActiveToolIndex]);
 }
 
-void AGardeningCharacter::SetActiveTool(FString Tool)
+void AGardeningCharacter::SetActiveTool(const FString NewActiveTool)
 {
-	if (Tool == Tool_Seeds)
+	// If the tool is already active
+	if (Tools[ActiveToolIndex] == NewActiveTool)
 	{
-		Sack->SetActorHiddenInGame(false);
-		Bucket->SetActorHiddenInGame(true);
-		Axe->SetActorHiddenInGame(true);
-		Axe->Trigger->SetActive(false);
+		return;
 	}
-	else if (Tool == Tool_Water)
-	{
-		Sack->SetActorHiddenInGame(true);
-		Bucket->SetActorHiddenInGame(false);
-		Axe->SetActorHiddenInGame(true);
-		Axe->Trigger->SetActive(false);
-	}
-	else if (Tool == Tool_Axe)
-	{
-		Sack->SetActorHiddenInGame(true);
-		Bucket->SetActorHiddenInGame(true);
-		Axe->SetActorHiddenInGame(false);
-		Axe->Trigger->SetActive(true);
-	}
+
+	const bool bSeedsActive = NewActiveTool == Tool_Seeds;
+	const bool bWaterActive = NewActiveTool == Tool_Water;
+	const bool bAxeActive = NewActiveTool == Tool_Axe;
+
+	Sack->SetActorHiddenInGame(!bSeedsActive);
+	Bucket->SetActorHiddenInGame(!bWaterActive);
+	Axe->SetActorHiddenInGame(!bAxeActive);
+	Axe->Trigger->SetActive(bAxeActive);
+
+	ActiveToolIndex = Tools.Find(NewActiveTool);
 }
 
 void AGardeningCharacter::FirePressed()
