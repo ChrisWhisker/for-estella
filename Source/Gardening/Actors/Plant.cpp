@@ -86,6 +86,11 @@ void APlant::BeginPlay()
 
 	ProgressBarWidget->SetVisibility(false);
 	Health = MaxHealth;
+}
+
+void APlant::SecondarySetup(const int32 TeamNum)
+{
+	TeamNumber = TeamNum;
 	AddHeight(FMath::RandRange(.25f, .5f));
 }
 
@@ -146,7 +151,7 @@ bool APlant::AddHeight(const float FeetToAdd)
 {
 	if (GetWorld() != nullptr)
 	{
-		GetWorld()->GetGameState<AGardeningGameState>()->AddGardenHeightFeet(0, FeetToAdd);
+		GetWorld()->GetGameState<AGardeningGameState>()->AddGardenHeightFeet(TeamNumber, FeetToAdd);
 		HeightInFeet += FeetToAdd;
 		return true;
 	}
@@ -174,7 +179,7 @@ float APlant::CutDown()
 	if (GetWorld() != nullptr)
 	{
 		GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &APlant::DestroySelf, 0.1f, false);
-		GetWorld()->GetGameState<AGardeningGameState>()->AddGardenHeightFeet(0, -HeightInFeet);
+		GetWorld()->GetGameState<AGardeningGameState>()->AddGardenHeightFeet(TeamNumber, -HeightInFeet);
 		return HeightInFeet;
 	}
 	return 0;

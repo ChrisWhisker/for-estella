@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Gardening/Character/GardeningCharacter.h"
 #include "GardeningPlayerController.generated.h"
 
 /**
@@ -13,9 +14,19 @@ class GARDENING_API AGardeningPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	////////// FUNCTIONS //////////
+	virtual void FirePressed();
+
+	virtual void FireReleased();
+
+	virtual void SwitchTool();
+
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
+
+	virtual void SetupInputComponent() override;
 
 	////////// PROPERTIES //////////
 	UPROPERTY(EditDefaultsOnly)
@@ -23,4 +34,8 @@ protected:
 
 	UPROPERTY()
 	UUserWidget* Hud;
+
+private:
+	UPROPERTY()
+	AGardeningCharacter* ControlledCharacter;
 };

@@ -19,6 +19,10 @@ public:
 	////////// FUNCTIONS //////////
 	APlant();
 
+	/* This is used to ensure references are valid before performing the dependent setup*/
+	UFUNCTION()
+	void SecondarySetup(const int32 TeamNumber);
+
 	virtual void Tick(float DeltaTime) override;
 
 	void StartGrowing();
@@ -35,6 +39,8 @@ public:
 	float GrowthTimelineLength;
 
 	float CutDown();
+
+	int32 TeamNumber = -1; // Initialize with invalid team so we know when it hasn't been set
 
 protected:
 	////////// FUNCTIONS //////////

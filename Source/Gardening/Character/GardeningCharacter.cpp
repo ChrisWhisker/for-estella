@@ -65,15 +65,6 @@ void AGardeningCharacter::BeginPlay()
 	Sack->SetOwner(this);
 }
 
-void AGardeningCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGardeningCharacter::FirePressed);
-	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AGardeningCharacter::FireReleased);
-	PlayerInputComponent->BindAction("SwitchTool", IE_Released, this, &AGardeningCharacter::SwitchTool);
-}
-
 // ReSharper disable once CppMemberFunctionMayBeConst
 void AGardeningCharacter::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
@@ -122,7 +113,7 @@ void AGardeningCharacter::SetActiveTool(const FString NewActiveTool)
 	ActiveToolIndex = Tools.Find(NewActiveTool);
 }
 
-void AGardeningCharacter::FirePressed()
+void AGardeningCharacter::FirePressed(int32 TeamNumber)
 {
 	if (Tools[ActiveToolIndex] == Tool_Seeds)
 	{
@@ -133,7 +124,7 @@ void AGardeningCharacter::FirePressed()
 		if (!bTraceSucceeded) { return; }
 		AActor* HitActor = Hit.GetActor();
 		if (!HitActor) { return; }
-		PlantSeed(Hit);
+		PlantSeed(Hit, TeamNumber);
 	}
 	else if (Tools[ActiveToolIndex] == Tool_Water)
 	{
@@ -153,7 +144,7 @@ void AGardeningCharacter::FireReleased()
 	StopWatering();
 }
 
-void AGardeningCharacter::PlantSeed(const FHitResult Hit)
+void AGardeningCharacter::PlantSeed(const FHitResult Hit, int32 TeamNumber)
 {
 	if (!Hit.GetActor()->GetClass()->GetName().Contains(TEXT("Landscape")))
 	{
@@ -170,6 +161,7 @@ void AGardeningCharacter::PlantSeed(const FHitResult Hit)
 	if (SpawnedPlant)
 	{
 		SeedCount--;
+		SpawnedPlant->SecondarySetup(TeamNumber);
 	}
 }
 

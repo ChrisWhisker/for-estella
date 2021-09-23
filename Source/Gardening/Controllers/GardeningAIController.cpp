@@ -12,7 +12,6 @@ void AGardeningAIController::BeginPlay()
 	APawn* AIPawn = GetPawn();
 	AICharacter = Cast<AGardeningCharacter>(AIPawn);
 
-
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
 	if (AIBehaviorTree != nullptr)
@@ -29,9 +28,9 @@ void AGardeningAIController::Tick(float DeltaTime)
 	{
 		if (AICharacter->GetDistanceTo(PlayerPawn) < AttackPlayerDistance)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Updating player location to %s"), *(PlayerPawn->GetActorLocation().ToString()));
 			GetBlackboardComponent()->SetValueAsVector("PlayerLocation", PlayerPawn->GetActorLocation());
-			AICharacter->SetActiveTool(AICharacter->Tool_Axe); // TODO Shouldn't do this here, it should be in a behavior tree task
+			AICharacter->SetActiveTool(AICharacter->Tool_Axe);
+			// TODO Shouldn't do this here, it should be in a behavior tree task
 		}
 	}
 	else

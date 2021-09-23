@@ -21,7 +21,7 @@ public:
 
 	virtual void SetActiveTool(const FString NewActiveTool);
 
-	virtual void FirePressed();
+	virtual void FirePressed(int32 TeamNumber);
 
 	virtual void FireReleased();
 
@@ -67,9 +67,7 @@ protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	void PlantSeed(FHitResult Hit);
+	void PlantSeed(FHitResult Hit, int32 TeamNumber);
 
 	void UseAxe();
 
