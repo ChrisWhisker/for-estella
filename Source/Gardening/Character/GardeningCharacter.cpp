@@ -96,25 +96,71 @@ void AGardeningCharacter::OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedCom
 	StopWateringPlant(Plant);
 }
 
+// void AGardeningCharacter::SwitchTool()
+// {
+// 	ActiveToolIndex = (ActiveToolIndex + 1) % Tools.Num();
+//
+// 	if (Tools[ActiveToolIndex] == Tool_Seeds)
+// 	{
+// 		Sack->SetActorHiddenInGame(false);
+// 		Bucket->SetActorHiddenInGame(true);
+// 		Axe->SetActorHiddenInGame(true);
+// 		Axe->Trigger->SetActive(false);
+// 	}
+// 	else if (Tools[ActiveToolIndex] == Tool_Water)
+// 	{
+// 		Sack->SetActorHiddenInGame(true);
+// 		Bucket->SetActorHiddenInGame(false);
+// 		Axe->SetActorHiddenInGame(true);
+// 		Axe->Trigger->SetActive(false);
+// 	}
+// 	else if (Tools[ActiveToolIndex] == Tool_Axe)
+// 	{
+// 		Sack->SetActorHiddenInGame(true);
+// 		Bucket->SetActorHiddenInGame(true);
+// 		Axe->SetActorHiddenInGame(false);
+// 		Axe->Trigger->SetActive(true);
+// 	}
+// }
+
 void AGardeningCharacter::SwitchTool()
 {
 	ActiveToolIndex = (ActiveToolIndex + 1) % Tools.Num();
 
+	// UE_LOG(LogTemp, Error, TEXT("Was %s, is now %s"), *Tools[ActiveToolIndex], *Tools[ActiveToolIndex]);
+	SetActiveTool(Tools[ActiveToolIndex]);
+
 	if (Tools[ActiveToolIndex] == Tool_Seeds)
+	{
+		SetActiveTool(Tool_Seeds);
+	}
+	else if (Tools[ActiveToolIndex] == Tool_Water)
+	{
+		SetActiveTool(Tool_Water);
+	}
+	else if (Tools[ActiveToolIndex] == Tool_Axe)
+	{
+		SetActiveTool(Tool_Axe);
+	}
+}
+
+void AGardeningCharacter::SetActiveTool(FString Tool)
+{
+	if (Tool == Tool_Seeds)
 	{
 		Sack->SetActorHiddenInGame(false);
 		Bucket->SetActorHiddenInGame(true);
 		Axe->SetActorHiddenInGame(true);
 		Axe->Trigger->SetActive(false);
 	}
-	else if (Tools[ActiveToolIndex] == Tool_Water)
+	else if (Tool == Tool_Water)
 	{
 		Sack->SetActorHiddenInGame(true);
 		Bucket->SetActorHiddenInGame(false);
 		Axe->SetActorHiddenInGame(true);
 		Axe->Trigger->SetActive(false);
 	}
-	else if (Tools[ActiveToolIndex] == Tool_Axe)
+	else if (Tool == Tool_Axe)
 	{
 		Sack->SetActorHiddenInGame(true);
 		Bucket->SetActorHiddenInGame(true);

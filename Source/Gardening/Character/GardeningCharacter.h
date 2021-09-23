@@ -19,6 +19,8 @@ public:
 
 	virtual void SwitchTool();
 
+	virtual void SetActiveTool(FString Tool);
+
 	virtual void FirePressed();
 
 	virtual void FireReleased();
