@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GardeningGameMode.h"
-#include "Character/GardeningCharacter.h"
+#include "Gardening/Character/GardeningCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AGardeningGameMode::AGardeningGameMode()
