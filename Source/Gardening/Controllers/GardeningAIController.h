@@ -20,21 +20,32 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
-
-	UPROPERTY()
+	
+	///////////// PROPERTIES //////////
+		UPROPERTY()
 	APawn* PlayerPawn;
 
 	UPROPERTY(EditAnywhere)
-	float AttackPlayerDistance = 8000;
+	float PlayerSearchRange = 8000;
 
 	UPROPERTY(EditAnywhere)
-	float AttackPlayerPlantDistance = 12000;
+	float PlayerPlantSearchRange = 12000;
 
+	UPROPERTY(EditAnywhere)
+	float OwnPlantSearchRange = 12000;
+	
 	UPROPERTY()
 	AGardeningCharacter* AICharacter;
 
 private:
+	////////// FUNCTIONS //////////
+	void FindPlayerCharacter();
+
+	void FindNearestPlant(bool FindingPlayerPlant); // true if finding player's plant, false if finding own (AI's) plant
+
+	///////////// PROPERTIES //////////
 	UPROPERTY(EditAnywhere)
 	class UBehaviorTree* AIBehaviorTree;
 

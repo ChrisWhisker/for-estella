@@ -31,9 +31,16 @@ void AGardeningAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FindPlayerCharacter();
+	FindNearestPlant(true);
+	FindNearestPlant(false);
+}
+
+void AGardeningAIController::FindPlayerCharacter()
+{
 	if (LineOfSightTo(PlayerPawn))
 	{
-		if (AICharacter->GetDistanceTo(PlayerPawn) < AttackPlayerDistance)
+		if (AICharacter->GetDistanceTo(PlayerPawn) < PlayerSearchRange)
 		{
 			GetBlackboardComponent()->SetValueAsVector("PlayerLocation", PlayerPawn->GetActorLocation());
 			AICharacter->SetActiveTool(AICharacter->Tool_Axe);
@@ -44,30 +51,50 @@ void AGardeningAIController::Tick(float DeltaTime)
 	{
 		GetBlackboardComponent()->ClearValue("PlayerLocation");
 	}
+}
 
-	float NearestPlayerPlantDistance = AttackPlayerPlantDistance;
-	FVector NearestPlayerPlantLocation;
+void AGardeningAIController::FindNearestPlant(const bool FindingPlayerPlant)
+{
+	float SearchRange;
+	TArray<AActor*> PlantsList;
+	FName PlantLocationKeyName;
 
-	for (AActor* PlayerPlant : GameState->PlayerPlants)
+	if (FindingPlayerPlant)
+	{
+		SearchRange = PlayerPlantSearchRange;
+		PlantsList = GameState->PlayerPlants;
+		PlantLocationKeyName = FName("PlayerPlantLocation");
+	}
+	else
+	{
+		SearchRange = OwnPlantSearchRange;
+		PlantsList = GameState->AIPlants;
+		PlantLocationKeyName = FName("AIPlantLocation");
+	}
+
+	float NearestPlantDistance = SearchRange;
+	FVector NearestPlantLocation;
+
+	for (AActor* PlantActor : PlantsList)
 	{
 		//	if (LineOfSightTo(PlayerPlant)) // TODO Only set if the AI can see the plant
-		//	{
-		const float DistanceToPlant = AICharacter->GetDistanceTo(PlayerPlant);
+		//	{								// TODO and if the plant is high enough to cut down
+		const float DistanceToPlant = AICharacter->GetDistanceTo(PlantActor);
 
-		if (DistanceToPlant < NearestPlayerPlantDistance)
+		if (DistanceToPlant < NearestPlantDistance)
 		{
-			NearestPlayerPlantDistance = DistanceToPlant;
-			NearestPlayerPlantLocation = PlayerPlant->GetActorLocation();
+			NearestPlantDistance = DistanceToPlant;
+			NearestPlantLocation = PlantActor->GetActorLocation();
 		}
 		//	}
 	}
 
-	if (NearestPlayerPlantDistance < AttackPlayerPlantDistance)
+	if (NearestPlantDistance < SearchRange)
 	{
-		GetBlackboardComponent()->SetValueAsVector("PlayerPlantLocation", NearestPlayerPlantLocation);
+		GetBlackboardComponent()->SetValueAsVector(PlantLocationKeyName, NearestPlantLocation);
 	}
 	else
 	{
-		GetBlackboardComponent()->ClearValue("PlayerPlantLocation");
+		GetBlackboardComponent()->ClearValue(PlantLocationKeyName);
 	}
 }
