@@ -70,6 +70,12 @@ void APlant::BeginPlay()
 	InitialScale = Mesh->GetRelativeScale3D();
 	GrowthTimelineLength = GrowthTimeline.GetTimelineLength();
 
+	if (GetWorld() == nullptr) { UE_LOG(LogTemp, Error, TEXT("GetWorld() returned null so game state is not set.")); }
+	else
+	{
+		GameState = GetWorld()->GetGameState<AGardeningGameState>();
+	}
+
 	UActorComponent* ProgressBar = this->GetComponentByClass(UWidgetComponent::StaticClass());
 	if (!ProgressBar)
 	{
@@ -92,6 +98,7 @@ void APlant::SecondarySetup(const int32 TeamNum)
 {
 	TeamNumber = TeamNum;
 	AddHeight(FMath::RandRange(.25f, .5f));
+	GameState->AddPlantToGarden(TeamNum, this);
 }
 
 void APlant::Tick(float DeltaTime)
@@ -149,13 +156,9 @@ void APlant::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 
 bool APlant::AddHeight(const float FeetToAdd)
 {
-	if (GetWorld() != nullptr)
-	{
-		GetWorld()->GetGameState<AGardeningGameState>()->AddGardenHeightFeet(TeamNumber, FeetToAdd);
-		HeightInFeet += FeetToAdd;
-		return true;
-	}
-	return false;
+	GameState->AddGardenHeightFeet(TeamNumber, FeetToAdd);
+	HeightInFeet += FeetToAdd;
+	return true;
 }
 
 float APlant::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -179,7 +182,8 @@ float APlant::CutDown()
 	if (GetWorld() != nullptr)
 	{
 		GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &APlant::DestroySelf, 0.1f, false);
-		GetWorld()->GetGameState<AGardeningGameState>()->AddGardenHeightFeet(TeamNumber, -HeightInFeet);
+		GameState->AddGardenHeightFeet(TeamNumber, -HeightInFeet);
+		GameState->RemovePlantFromGarden(TeamNumber, this);
 		return HeightInFeet;
 	}
 	return 0;

@@ -104,4 +104,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	float Health;
+
+	UPROPERTY()
+	class AGardeningGameState* GameState;
 };

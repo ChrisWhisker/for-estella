@@ -26,7 +26,10 @@ protected:
 	APawn* PlayerPawn;
 
 	UPROPERTY(EditAnywhere)
-	float AttackPlayerDistance = 10000;
+	float AttackPlayerDistance = 8000;
+
+	UPROPERTY(EditAnywhere)
+	float AttackPlayerPlantDistance = 12000;
 
 	UPROPERTY()
 	AGardeningCharacter* AICharacter;
@@ -34,4 +37,7 @@ protected:
 private:
 	UPROPERTY(EditAnywhere)
 	class UBehaviorTree* AIBehaviorTree;
+
+	UPROPERTY()
+	class AGardeningGameState* GameState;
 };

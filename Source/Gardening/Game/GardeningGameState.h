@@ -19,6 +19,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void AddGardenHeightFeet(int32 TeamNumber, float FeetToAdd);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void AddPlantToGarden(int32 TeamNumber, class APlant* Plant);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RemovePlantFromGarden(int32 TeamNumber, class APlant* Plant);
+
 	////////// PROPERTIES //////////
 	UPROPERTY(BlueprintReadWrite, Category="Player")
 	TArray<AActor*> PlayerPlants;

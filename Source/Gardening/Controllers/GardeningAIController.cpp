@@ -3,6 +3,7 @@
 
 #include "GardeningAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Gardening/Game/GardeningGameState.h"
 #include "Kismet/GameplayStatics.h"
 
 void AGardeningAIController::BeginPlay()
@@ -13,6 +14,12 @@ void AGardeningAIController::BeginPlay()
 	AICharacter = Cast<AGardeningCharacter>(AIPawn);
 
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+	if (GetWorld() == nullptr) { UE_LOG(LogTemp, Error, TEXT("GetWorld() returned null so game state is not set.")); }
+	else
+	{
+		GameState = GetWorld()->GetGameState<AGardeningGameState>();
+	}
 
 	if (AIBehaviorTree != nullptr)
 	{
@@ -36,5 +43,31 @@ void AGardeningAIController::Tick(float DeltaTime)
 	else
 	{
 		GetBlackboardComponent()->ClearValue("PlayerLocation");
+	}
+
+	float NearestPlayerPlantDistance = AttackPlayerPlantDistance;
+	FVector NearestPlayerPlantLocation;
+
+	for (AActor* PlayerPlant : GameState->PlayerPlants)
+	{
+		//	if (LineOfSightTo(PlayerPlant)) // TODO Only set if the AI can see the plant
+		//	{
+		const float DistanceToPlant = AICharacter->GetDistanceTo(PlayerPlant);
+
+		if (DistanceToPlant < NearestPlayerPlantDistance)
+		{
+			NearestPlayerPlantDistance = DistanceToPlant;
+			NearestPlayerPlantLocation = PlayerPlant->GetActorLocation();
+		}
+		//	}
+	}
+
+	if (NearestPlayerPlantDistance < AttackPlayerPlantDistance)
+	{
+		GetBlackboardComponent()->SetValueAsVector("PlayerPlantLocation", NearestPlayerPlantLocation);
+	}
+	else
+	{
+		GetBlackboardComponent()->ClearValue("PlayerPlantLocation");
 	}
 }
