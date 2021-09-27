@@ -3,6 +3,7 @@
 
 #include "GardeningAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Gardening/Actors/SeedPickup.h"
 #include "Gardening/Game/GardeningGameState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -25,6 +26,9 @@ void AGardeningAIController::BeginPlay()
 	{
 		RunBehaviorTree(AIBehaviorTree);
 	}
+
+	FindNearestPickup();
+	GetWorld()->GetTimerManager().SetTimer(PickupSearchTimerHandle, this, &AGardeningAIController::FindNearestPickup, 1, true);
 }
 
 void AGardeningAIController::Tick(float DeltaTime)
@@ -97,4 +101,33 @@ void AGardeningAIController::FindNearestPlant(const bool FindingPlayerPlant)
 	{
 		GetBlackboardComponent()->ClearValue(PlantLocationKeyName);
 	}
+}
+
+void AGardeningAIController::FindNearestPickup()
+{
+	UE_LOG(LogTemp, Warning, TEXT("FindNearestPickup() called."));
+
+	TArray<AActor*> AllPickups;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASeedPickup::StaticClass(), AllPickups);
+	FVector NearestPickupLocation;
+
+	float NearestPickupDistance = 1000000;
+	for (AActor* PickupActor : AllPickups)
+	{
+		const float DistanceToPickup = AICharacter->GetDistanceTo(PickupActor);
+
+		if (DistanceToPickup < NearestPickupDistance)
+		{
+			NearestPickupDistance = DistanceToPickup;
+			NearestPickupLocation = PickupActor->GetActorLocation();
+		}
+	}
+
+	(NearestPickupLocation - AICharacter->GetActorLocation()).Normalize() * 10;
+	
+	
+	NearestPickupLocation.Z = NearestPickupLocation.Z + 150; // Put the vector above ground (not sure if it's necessary)
+	// add 150 to z axis
+
+	GetBlackboardComponent()->SetValueAsVector("NearestPickupLocation", NearestPickupLocation);
 }

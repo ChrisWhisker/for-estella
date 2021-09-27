@@ -22,28 +22,33 @@ public:
 protected:
 	////////// FUNCTIONS //////////
 	virtual void BeginPlay() override;
-	
+
 	///////////// PROPERTIES //////////
-		UPROPERTY()
+	UPROPERTY()
 	APawn* PlayerPawn;
 
+	UPROPERTY()
+	AGardeningCharacter* AICharacter;
+
 	UPROPERTY(EditAnywhere)
-	float PlayerSearchRange = 8000;
+	float PlayerSearchRange = 6000;
 
 	UPROPERTY(EditAnywhere)
 	float PlayerPlantSearchRange = 12000;
 
 	UPROPERTY(EditAnywhere)
-	float OwnPlantSearchRange = 12000;
-	
-	UPROPERTY()
-	AGardeningCharacter* AICharacter;
+	float OwnPlantSearchRange = 8000;
+
+	FTimerHandle PickupSearchTimerHandle;
 
 private:
 	////////// FUNCTIONS //////////
 	void FindPlayerCharacter();
 
 	void FindNearestPlant(bool FindingPlayerPlant); // true if finding player's plant, false if finding own (AI's) plant
+
+	UFUNCTION()
+	void FindNearestPickup();
 
 	///////////// PROPERTIES //////////
 	UPROPERTY(EditAnywhere)
