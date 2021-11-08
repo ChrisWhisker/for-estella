@@ -123,11 +123,10 @@ void AGardeningAIController::FindNearestPickup()
 		}
 	}
 
-	(NearestPickupLocation - AICharacter->GetActorLocation()).Normalize() * 10;
+	// (NearestPickupLocation - AICharacter->GetActorLocation()).Normalize() * 10;
 	
 	
 	NearestPickupLocation.Z = NearestPickupLocation.Z + 150; // Put the vector above ground (not sure if it's necessary)
-	// add 150 to z axis
 
 	GetBlackboardComponent()->SetValueAsVector("NearestPickupLocation", NearestPickupLocation);
 }
