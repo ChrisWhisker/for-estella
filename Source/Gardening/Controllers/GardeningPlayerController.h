@@ -29,10 +29,10 @@ protected:
 	virtual void SetupInputComponent() override;
 
 	////////// PROPERTIES //////////
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly)
 	TSubclassOf<class UUserWidget> HudClass;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UUserWidget* Hud;
 
 private:
