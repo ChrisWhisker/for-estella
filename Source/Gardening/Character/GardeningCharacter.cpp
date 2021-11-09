@@ -153,8 +153,8 @@ void AGardeningCharacter::PlantSeed(const FHitResult Hit, int32 TeamNumber)
 		return;
 	}
 
-	const float PlantYaw = FMath::RandRange(0.f, 360.f);
-	const FRotator PlantingDirection = FRotator(0.f, PlantYaw, 0.f);
+	const float PlantRotation = FMath::RandRange(0.f, 360.f);
+	const FRotator PlantingDirection = FRotator(0.f, PlantRotation, 0.f);
 	AActor* Spawned = GetWorld()->SpawnActor<APlant>(PlantClass, Hit.Location, PlantingDirection);
 	APlant* SpawnedPlant = Cast<APlant>(Spawned);
 
@@ -195,11 +195,7 @@ void AGardeningCharacter::StopWatering()
 void AGardeningCharacter::StartWateringPlant(APlant* PlantToWater)
 {
 	PlantToWater->StartGrowing();
-
-	if (!WateredPlants.Contains(PlantToWater))
-	{
-		WateredPlants.Add(PlantToWater);
-	}
+	WateredPlants.AddUnique(PlantToWater);
 }
 
 void AGardeningCharacter::StopWateringPlant(APlant* WateredPlant)

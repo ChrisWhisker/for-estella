@@ -42,14 +42,10 @@ void AGardeningAIController::Tick(float DeltaTime)
 
 void AGardeningAIController::FindPlayerCharacter()
 {
-	if (LineOfSightTo(PlayerPawn))
+	if (LineOfSightTo(PlayerPawn) && AICharacter->GetDistanceTo(PlayerPawn) < PlayerSearchRange)
 	{
-		if (AICharacter->GetDistanceTo(PlayerPawn) < PlayerSearchRange)
-		{
-			GetBlackboardComponent()->SetValueAsVector("PlayerLocation", PlayerPawn->GetActorLocation());
-			AICharacter->SetActiveTool(AICharacter->Tool_Axe);
-			// TODO Shouldn't do this here, it should be in a behavior tree task
-		}
+		GetBlackboardComponent()->SetValueAsVector("PlayerLocation", PlayerPawn->GetActorLocation());
+		AICharacter->SetActiveTool(AICharacter->Tool_Axe); // TODO Shouldn't do this here. should be in a BT task
 	}
 	else
 	{
@@ -79,10 +75,10 @@ void AGardeningAIController::FindNearestPlant(const bool FindingPlayerPlant)
 	float NearestPlantDistance = SearchRange;
 	FVector NearestPlantLocation;
 
-	for (AActor* PlantActor : PlantsList)
+	for (const AActor* PlantActor : PlantsList)
 	{
 		//	if (LineOfSightTo(PlayerPlant)) // TODO Only set if the AI can see the plant
-		//	{								// TODO and if the plant is high enough to cut down
+		//	{								// and if the plant is high enough to cut down
 		const float DistanceToPlant = AICharacter->GetDistanceTo(PlantActor);
 
 		if (DistanceToPlant < NearestPlantDistance)
@@ -112,7 +108,7 @@ void AGardeningAIController::FindNearestPickup()
 	FVector NearestPickupLocation;
 
 	float NearestPickupDistance = 1000000;
-	for (AActor* PickupActor : AllPickups)
+	for (const AActor* PickupActor : AllPickups)
 	{
 		const float DistanceToPickup = AICharacter->GetDistanceTo(PickupActor);
 
@@ -124,9 +120,6 @@ void AGardeningAIController::FindNearestPickup()
 	}
 
 	// (NearestPickupLocation - AICharacter->GetActorLocation()).Normalize() * 10;
-	
-	
 	NearestPickupLocation.Z = NearestPickupLocation.Z + 150; // Put the vector above ground (not sure if it's necessary)
-
 	GetBlackboardComponent()->SetValueAsVector("NearestPickupLocation", NearestPickupLocation);
 }

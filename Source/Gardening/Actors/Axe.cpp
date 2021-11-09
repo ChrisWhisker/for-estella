@@ -33,7 +33,7 @@ void AAxe::SecondarySetup(AGardeningCharacter* Char)
 	Character = Char;
 	if (!Character)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Character not found on Plant"));
+		UE_LOG(LogTemp, Error, TEXT("Character not found on Axe"));
 		return;
 	}
 }
