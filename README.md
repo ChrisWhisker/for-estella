@@ -1,6 +1,6 @@
 
 # For Estella
-You and the other dryads have lived in the mystical Ciridi forest for centuries. It has seen peace for most of that time, until the evil Twiggan arrived. He began cutting down your ancestral woods and replacing them with his vile, disease-ridden saplings. In the ensuing battle, your sister Estella sacrificed her physical form to save Ciridi from destruction. In doing so, her spirit became one with the forest. Seven years have passed and Twiggan has returned to finish what he started. Take back the forest and rescue Estella's spirit!
+You and the other dryads have lived in the mystical Ciridi forest for centuries. It has seen peace for most of that time, until the evil Twiggan arrived. He began cutting down your ancestral woods and replacing them with his vile, disease-ridden saplings. In the ensuing battle, your sister Estella sacrificed her physical form to save Ciridi from destruction. In doing so, her spirit became one with the forest. Several years have passed and Twiggan has returned to finish what he started. Take back the forest and rescue Estella's spirit!
 
 ## Help
 Plant seedlings, water your shrubs, and sabotage Twiggan with your axe.
